@@ -122,8 +122,10 @@ export default function Dashboard() {
     analyzed_sessions: 1248,
   });
 
-  const [patients, setPatients] = useState<string[]>([]);
+  const [patients, setPatients] = useState<any[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<string>("");
+  const [showAddPatient, setShowAddPatient] = useState(false);
+  const [newPatient, setNewPatient] = useState({ name: "", age: "", gender: "Male", notes: "" });
   const [patientHistory, setPatientHistory] = useState<any[]>([]);
 
   const [showConsent, setShowConsent] = useState(false);
@@ -165,7 +167,7 @@ export default function Dashboard() {
         if (data.status === "success") {
           setPatients(data.patients);
           if (data.patients.length > 0) {
-            setSelectedPatient(data.patients[0]);
+            setSelectedPatient(data.patients[0].id);
           }
         }
       })
@@ -195,6 +197,37 @@ export default function Dashboard() {
     localStorage.setItem("neurosense_patient_id", selectedPatient);
   }, [selectedPatient]);
 
+  const handleAddPatient = (e: React.FormEvent) => {
+    e.preventDefault();
+    fetch("/api/patients", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: newPatient.name,
+        age: parseInt(newPatient.age) || 0,
+        gender: newPatient.gender,
+        notes: newPatient.notes
+      })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "success") {
+          setShowAddPatient(false);
+          setNewPatient({ name: "", age: "", gender: "Male", notes: "" });
+          // Refresh patients
+          fetch("/api/patients")
+            .then(res => res.json())
+            .then(pdata => {
+              if (pdata.status === "success") {
+                setPatients(pdata.patients);
+                setSelectedPatient(data.patient.id);
+              }
+            });
+        }
+      })
+      .catch(err => console.error(err));
+  };
+
   const latestHistory = patientHistory[patientHistory.length - 1];
   const previousHistory = patientHistory[patientHistory.length - 2];
   const riskChange =
@@ -209,11 +242,46 @@ export default function Dashboard() {
         : "Lower screening signal"
     : "Awaiting assessment data";
 
+  const selectedPatientData = patients.find(p => p.id === selectedPatient);
+
   return (
     <div
       className="fade-in"
       style={{ paddingBottom: "3rem", position: "relative" }}
     >
+      {showAddPatient && (
+        <div style={{
+          position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+          background: "rgba(15, 23, 42, 0.7)", backdropFilter: "blur(4px)",
+          zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center"
+        }}>
+          <div style={{
+            background: "var(--panel-bg)", padding: "2.5rem", borderRadius: "16px",
+            maxWidth: "500px", width: "90%", border: "1px solid var(--panel-border)",
+            boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)"
+          }}>
+            <h2 style={{ fontSize: "1.5rem", marginBottom: "1.5rem", color: "var(--text-main)" }}>Add New Patient</h2>
+            <form onSubmit={handleAddPatient} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <input type="text" placeholder="Full Name" className="login-input" required 
+                value={newPatient.name} onChange={e => setNewPatient({...newPatient, name: e.target.value})} />
+              <input type="number" placeholder="Age" className="login-input" required 
+                value={newPatient.age} onChange={e => setNewPatient({...newPatient, age: e.target.value})} />
+              <select className="login-input" value={newPatient.gender} onChange={e => setNewPatient({...newPatient, gender: e.target.value})}>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+              <textarea placeholder="Clinical Notes (Optional)" className="login-input" rows={3}
+                value={newPatient.notes} onChange={e => setNewPatient({...newPatient, notes: e.target.value})} />
+              <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
+                <button type="button" className="btn btn-outline" style={{ flex: 1 }} onClick={() => setShowAddPatient(false)}>Cancel</button>
+                <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>Save Patient</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {showConsent && (
         <div
           style={{
@@ -482,20 +550,40 @@ export default function Dashboard() {
                 Review screening risk movement across completed assessments.
               </p>
             </div>
-            <label className="patient-select-wrap">
-              <span>Patient record</span>
-              <select
-                className="patient-select"
-                value={selectedPatient}
-                onChange={(e) => setSelectedPatient(e.target.value)}
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+              <button 
+                className="btn btn-outline" 
+                style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
+                onClick={() => setShowAddPatient(true)}
               >
-                {patients.map((p) => (
-                  <option key={p} value={p}>
-                    {p}
-                  </option>
-                ))}
-              </select>
-            </label>
+                + New Patient
+              </button>
+              <button 
+                className="btn btn-outline" 
+                style={{ padding: "0.5rem 1rem", fontSize: "0.9rem", borderColor: "var(--primary)", color: "var(--primary)" }}
+                onClick={() => window.open(`/api/patients/${selectedPatient}/fhir`, "_blank")}
+                title="Export latest assessment in FHIR format for EMR integration"
+              >
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: "0.5rem", verticalAlign: "middle" }}>
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                </svg>
+                Export EMR (FHIR)
+              </button>
+              <label className="patient-select-wrap">
+                <span>Patient record</span>
+                <select
+                  className="patient-select"
+                  value={selectedPatient}
+                  onChange={(e) => setSelectedPatient(e.target.value)}
+                >
+                  {patients.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name} ({p.id})
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
           </div>
 
           <div className="tracking-summary">
@@ -505,7 +593,7 @@ export default function Dashboard() {
               </span>
               <div>
                 <span className="summary-label">Active patient</span>
-                <strong>{selectedPatient}</strong>
+                <strong>{selectedPatientData ? `${selectedPatientData.name} (${selectedPatientData.id})` : selectedPatient}</strong>
               </div>
               <span className="tracking-status">
                 <span /> Monitoring active

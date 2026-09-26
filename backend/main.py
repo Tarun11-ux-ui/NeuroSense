@@ -70,6 +70,17 @@ def init_db():
         cursor.execute("ALTER TABLE users ADD COLUMN password_hash TEXT")
     except sqlite3.OperationalError:
         pass
+        
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS patients (
+            id TEXT PRIMARY KEY,
+            name TEXT,
+            age INTEGER,
+            gender TEXT,
+            notes TEXT,
+            created_at TEXT
+        )
+    ''')
     
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS assessments (
@@ -126,6 +137,12 @@ class ShareReportRequest(BaseModel):
 class RemoteTelemetryRequest(BaseModel):
     telemetry: list[dict]
 
+
+class PatientCreate(BaseModel):
+    name: str
+    age: int
+    gender: str
+    notes: str = ""
 
 remote_sessions: dict[str, dict] = {}
 
@@ -534,16 +551,54 @@ def get_stats():
         "real_db_count": count
     }
 
+@app.post("/api/patients")
+def create_patient(req: PatientCreate):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    patient_id = f"PT-{random.randint(1000, 9999)}"
+    cursor.execute('''
+        INSERT INTO patients (id, name, age, gender, notes, created_at)
+        VALUES (?, ?, ?, ?, ?, ?)
+    ''', (patient_id, req.name, req.age, req.gender, req.notes, datetime.datetime.now().isoformat()))
+    conn.commit()
+    conn.close()
+    return {"status": "success", "patient": {"id": patient_id, "name": req.name}}
+
 @app.get("/api/patients")
 def get_patients():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute('SELECT DISTINCT patient_id FROM assessments WHERE patient_id IS NOT NULL AND patient_id != "anonymous"')
+    cursor.execute('SELECT id, name, age, gender, notes, created_at FROM patients ORDER BY created_at DESC')
     rows = cursor.fetchall()
+    
+    # If no patients exist, populate some defaults
+    if not rows:
+        defaults = [
+            ("PT-7829", "John Doe", 65, "Male", "Early stage Parkinson's suspect"),
+            ("PT-4491", "Jane Smith", 72, "Female", "Follow-up for tremor"),
+            ("PT-9932", "Robert Johnson", 58, "Male", "Baseline assessment")
+        ]
+        for d in defaults:
+            cursor.execute('INSERT INTO patients (id, name, age, gender, notes, created_at) VALUES (?, ?, ?, ?, ?, ?)', 
+                          (d[0], d[1], d[2], d[3], d[4], datetime.datetime.now().isoformat()))
+        conn.commit()
+        
+        cursor.execute('SELECT id, name, age, gender, notes, created_at FROM patients ORDER BY created_at DESC')
+        rows = cursor.fetchall()
+        
     conn.close()
-    patients = [r[0] for r in rows]
-    if not patients:
-        patients = ["PT-7829", "PT-4491", "PT-9932"]
+    
+    patients = []
+    for r in rows:
+        patients.append({
+            "id": r[0],
+            "name": r[1],
+            "age": r[2],
+            "gender": r[3],
+            "notes": r[4],
+            "created_at": r[5]
+        })
+        
     return {"status": "success", "patients": patients}
 
 @app.get("/api/patients/{patient_id}/history")
@@ -585,6 +640,78 @@ def get_patient_history(patient_id: str):
             })
             
     return {"status": "success", "history": history}
+
+@app.get("/api/patients/{patient_id}/fhir")
+def get_patient_fhir(patient_id: str):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute('SELECT name, age, gender FROM patients WHERE id = ?', (patient_id,))
+    patient_row = cursor.fetchone()
+    
+    cursor.execute('SELECT id, timestamp, overall_score, result_json FROM assessments WHERE patient_id = ? ORDER BY timestamp DESC LIMIT 1', (patient_id,))
+    assessment_row = cursor.fetchone()
+    conn.close()
+    
+    if not patient_row:
+        # Check if it's a default patient that doesn't exist in the table but is mocked in get_patients
+        patient_row = ("Mock Patient", 60, "unknown")
+        
+    name, age, gender = patient_row
+    
+    # Construct FHIR Patient
+    fhir_patient = {
+        "resourceType": "Patient",
+        "id": patient_id,
+        "name": [{"text": name}],
+        "gender": gender.lower() if gender in ["Male", "Female"] else "unknown"
+    }
+    
+    if not assessment_row:
+        return {
+            "resourceType": "Bundle",
+            "type": "collection",
+            "entry": [{"resource": fhir_patient}]
+        }
+        
+    assessment_id, timestamp, score, result_json = assessment_row
+    
+    try:
+        res = json.loads(result_json)
+        score = res.get("fusion", {}).get("fused_risk_score", score)
+    except:
+        pass
+        
+    # Construct FHIR DiagnosticReport
+    fhir_report = {
+        "resourceType": "DiagnosticReport",
+        "id": f"assessment-{assessment_id}",
+        "status": "final",
+        "code": {
+            "coding": [{
+                "system": "http://snomed.info/sct",
+                "code": "722162001",
+                "display": "Neurological multimodal screening"
+            }]
+        },
+        "subject": {"reference": f"Patient/{patient_id}"},
+        "effectiveDateTime": timestamp,
+        "conclusion": f"Neurological Risk Score: {score}",
+        "presentedForm": [{
+            "contentType": "application/json",
+            "data": result_json
+        }]
+    }
+    
+    bundle = {
+        "resourceType": "Bundle",
+        "type": "collection",
+        "entry": [
+            {"resource": fhir_patient},
+            {"resource": fhir_report}
+        ]
+    }
+    
+    return bundle
 
 import socket
 def get_local_ip():
