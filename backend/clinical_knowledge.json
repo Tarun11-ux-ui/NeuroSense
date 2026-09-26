@@ -1,0 +1,30 @@
+[
+  {
+    "keyword": "keystroke latency",
+    "context": "Elevated variance in keystroke latency and hold times is often an early indicator of bradykinesia and fine motor rigidity, commonly associated with early-stage Parkinson's disease. Latency fluctuations suggest interrupted motor planning and execution."
+  },
+  {
+    "keyword": "fine motor control",
+    "context": "Statistically significant deviation in fine motor control during spatiotemporal tracing, such as irregular spiral drawing, indicates resting or action tremors and rigidity. These micro-graphia symptoms are strongly correlated with dopaminergic pathway degradation."
+  },
+  {
+    "keyword": "vocal jitter",
+    "context": "Acoustic anomalies like vocal jitter, shimmer, and reduced phonation time map to hypokinetic dysarthria. This speech impairment is frequently observed in neurodegenerative disorders due to vocal fold rigidity and reduced respiratory control."
+  },
+  {
+    "keyword": "postural stability",
+    "context": "Irregularities in postural stability, ambulation cadence, and stride length are hallmark symptoms of advanced postural instability and gait disturbance (PIGD). These reflect compromised basal ganglia function impacting rhythmic motor tasks."
+  },
+  {
+    "keyword": "cursor trajectory",
+    "context": "Micro-fluctuations in cursor trajectory and atypical click dynamics point toward high-frequency kinetic tremors or intention tremors, suggesting cerebellar or basal ganglia irregularities."
+  },
+  {
+    "keyword": "multimodal alignment",
+    "context": "MDS-UPDRS criteria stipulate that a positive finding across three or more disjoint biometric modalities (e.g., vocal, kinetic, and ambulation) significantly increases the diagnostic certainty of idiopathic Parkinson's disease compared to isolated monomodal anomalies."
+  },
+  {
+    "keyword": "bradykinesia",
+    "context": "Early-onset bradykinesia is often undetectable by naked-eye observation but is consistently flagged by high-frequency sub-millisecond telemetry such as keystroke hold duration and mouse directional change hesitation."
+  }
+]

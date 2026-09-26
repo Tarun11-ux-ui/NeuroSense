@@ -1,0 +1,3 @@
+{
+  "note": "Fusion evaluation requires aligned, same-subject multimodal observations, which none of the supplied independent datasets provides. No synthetic fusion result was generated."
+}

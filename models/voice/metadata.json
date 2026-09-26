@@ -1,0 +1,7 @@
+{
+  "dataset": "UCI Parkinson Speech",
+  "task": "PD/control classification using documented status labels",
+  "split": "GroupShuffleSplit by parsed recording subject",
+  "selected_model": "random_forest",
+  "clinical_diagnosis": false
+}

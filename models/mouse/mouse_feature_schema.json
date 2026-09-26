@@ -1,0 +1,11 @@
+{
+  "features": [
+    "distance",
+    "velocity_mean",
+    "velocity_std",
+    "acceleration_mean",
+    "jerk_mean",
+    "straightness",
+    "direction_changes"
+  ]
+}

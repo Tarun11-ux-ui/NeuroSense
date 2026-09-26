@@ -1,0 +1,58 @@
+:root {
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light;
+  background-color: #f1f5f9;
+  color: #0f172a;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 1rem;
+  }
+  .app-navbar {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 0;
+  }
+  .nav-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .modules-grid {
+    grid-template-columns: 1fr;
+  }
+  .stat-card-container, div[style*="grid-template-columns: repeat(auto-fit"] {
+    grid-template-columns: 1fr !important;
+  }
+  .tracking-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  .tracking-metrics {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .module-main, .module-sidebar {
+    width: 100%;
+    min-width: 100%;
+  }
+  .module-container {
+    flex-direction: column;
+  }
+  /* For voice and gait capture specifically */
+  .remote-capture-panel {
+    display: none; /* We don't need this on mobile since mobile IS the client */
+  }
+}
+
+

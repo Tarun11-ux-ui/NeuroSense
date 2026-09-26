@@ -1,0 +1,15 @@
+{
+  "source_folders": [
+    "HealthySpiral",
+    "PatientSpiral"
+  ],
+  "format": "JPEG \u2192 grayscale",
+  "input_size": [
+    128,
+    128
+  ],
+  "normalization": "pixel / 255",
+  "augmentation": "train-only rotation \u22645\u00b0, translation \u22643px, scale 0.95\u20131.05; no horizontal flip",
+  "resnet": "grayscale replicated into 3 channels, ImageNet normalized",
+  "test_used_for_model_selection": false
+}

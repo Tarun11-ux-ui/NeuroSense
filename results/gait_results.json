@@ -1,0 +1,120 @@
+{
+  "dataset": "Daphnet Freezing of Gait",
+  "task": "freezing-event detection among people with PD; not PD diagnosis",
+  "subjects": 10,
+  "samples": 5985,
+  "features": 40,
+  "split": "GroupShuffleSplit by subject",
+  "selected_model": "mlp_lstm_proxy",
+  "comparison": {
+    "logistic_regression": {
+      "accuracy": 0.8232235701906413,
+      "precision": 0.20303030303030303,
+      "recall": 0.6090909090909091,
+      "f1": 0.30454545454545456,
+      "confusion_matrix": [
+        [
+          1358,
+          263
+        ],
+        [
+          43,
+          67
+        ]
+      ],
+      "brier_score": 0.10936540545951272,
+      "roc_auc": 0.8606471874824744
+    },
+    "random_forest": {
+      "accuracy": 0.9393414211438474,
+      "precision": 0.6923076923076923,
+      "recall": 0.08181818181818182,
+      "f1": 0.14634146341463414,
+      "confusion_matrix": [
+        [
+          1617,
+          4
+        ],
+        [
+          101,
+          9
+        ]
+      ],
+      "brier_score": 0.041775357733454525,
+      "roc_auc": 0.943166395603163
+    },
+    "hist_gradient_boosting": {
+      "accuracy": 0.9387637203928365,
+      "precision": 0.75,
+      "recall": 0.05454545454545454,
+      "f1": 0.1016949152542373,
+      "confusion_matrix": [
+        [
+          1619,
+          2
+        ],
+        [
+          104,
+          6
+        ]
+      ],
+      "brier_score": 0.05250740295984657,
+      "roc_auc": 0.9471706578430823
+    },
+    "xgboost": {
+      "accuracy": 0.9370306181398036,
+      "precision": 0.5555555555555556,
+      "recall": 0.045454545454545456,
+      "f1": 0.08403361344537816,
+      "confusion_matrix": [
+        [
+          1617,
+          4
+        ],
+        [
+          105,
+          5
+        ]
+      ],
+      "brier_score": 0.05402267173144291,
+      "roc_auc": 0.9376983904436096
+    },
+    "lightgbm": {
+      "accuracy": 0.9381860196418256,
+      "precision": 0.6666666666666666,
+      "recall": 0.05454545454545454,
+      "f1": 0.10084033613445378,
+      "confusion_matrix": [
+        [
+          1618,
+          3
+        ],
+        [
+          104,
+          6
+        ]
+      ],
+      "brier_score": 0.05816019873491883,
+      "roc_auc": 0.927250294431047
+    },
+    "mlp_lstm_proxy": {
+      "accuracy": 0.9416522241478914,
+      "precision": 0.8,
+      "recall": 0.10909090909090909,
+      "f1": 0.192,
+      "confusion_matrix": [
+        [
+          1618,
+          3
+        ],
+        [
+          98,
+          12
+        ]
+      ],
+      "brier_score": 0.05362471276896895,
+      "roc_auc": 0.9074645280690932
+    }
+  },
+  "note": "No neural .pt artifact: only a validated tabular baseline is trained."
+}

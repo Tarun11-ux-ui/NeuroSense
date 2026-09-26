@@ -1,0 +1,119 @@
+{
+  "dataset": "UCI Parkinson Speech",
+  "task": "PD/control clinical classification",
+  "subjects": 32,
+  "samples": 195,
+  "features": 22,
+  "split": "Stratified Shuffle Split",
+  "selected_model": "hist_gradient_boosting",
+  "comparison": {
+    "logistic_regression": {
+      "accuracy": 0.7435897435897436,
+      "precision": 1.0,
+      "recall": 0.6551724137931034,
+      "f1": 0.7916666666666666,
+      "confusion_matrix": [
+        [
+          10,
+          0
+        ],
+        [
+          10,
+          19
+        ]
+      ],
+      "brier_score": 0.14649246188662943,
+      "roc_auc": 0.9275862068965517
+    },
+    "random_forest": {
+      "accuracy": 0.9230769230769231,
+      "precision": 0.9333333333333333,
+      "recall": 0.9655172413793104,
+      "f1": 0.9491525423728814,
+      "confusion_matrix": [
+        [
+          8,
+          2
+        ],
+        [
+          1,
+          28
+        ]
+      ],
+      "brier_score": 0.06564829926762454,
+      "roc_auc": 0.9758620689655173
+    },
+    "hist_gradient_boosting": {
+      "accuracy": 0.9487179487179487,
+      "precision": 0.9655172413793104,
+      "recall": 0.9655172413793104,
+      "f1": 0.9655172413793104,
+      "confusion_matrix": [
+        [
+          9,
+          1
+        ],
+        [
+          1,
+          28
+        ]
+      ],
+      "brier_score": 0.05526720508033346,
+      "roc_auc": 0.9758620689655173
+    },
+    "xgboost": {
+      "accuracy": 0.9230769230769231,
+      "precision": 0.9333333333333333,
+      "recall": 0.9655172413793104,
+      "f1": 0.9491525423728814,
+      "confusion_matrix": [
+        [
+          8,
+          2
+        ],
+        [
+          1,
+          28
+        ]
+      ],
+      "brier_score": 0.05604365929520559,
+      "roc_auc": 0.9724137931034482
+    },
+    "lightgbm": {
+      "accuracy": 0.9487179487179487,
+      "precision": 0.9655172413793104,
+      "recall": 0.9655172413793104,
+      "f1": 0.9655172413793104,
+      "confusion_matrix": [
+        [
+          9,
+          1
+        ],
+        [
+          1,
+          28
+        ]
+      ],
+      "brier_score": 0.05136871906747951,
+      "roc_auc": 0.9758620689655172
+    },
+    "mlp_lstm_proxy": {
+      "accuracy": 0.9487179487179487,
+      "precision": 0.9655172413793104,
+      "recall": 0.9655172413793104,
+      "f1": 0.9655172413793104,
+      "confusion_matrix": [
+        [
+          9,
+          1
+        ],
+        [
+          1,
+          28
+        ]
+      ],
+      "brier_score": 0.036048163981366343,
+      "roc_auc": 0.9896551724137931
+    }
+  }
+}

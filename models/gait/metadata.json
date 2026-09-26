@@ -1,0 +1,7 @@
+{
+  "dataset": "Daphnet Freezing of Gait",
+  "task": "freezing-event detection among participants with Parkinson disease",
+  "split": "GroupShuffleSplit by subject",
+  "selected_model": "hist_gradient_boosting",
+  "clinical_diagnosis": false
+}

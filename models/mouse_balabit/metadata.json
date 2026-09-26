@@ -1,0 +1,7 @@
+{
+  "dataset": "Balabit Mouse Dynamics Challenge",
+  "task": "legal/illegal authentication-session classification; not Parkinson classification",
+  "accounts": 10,
+  "sessions": 816,
+  "selected_model": "lightgbm"
+}

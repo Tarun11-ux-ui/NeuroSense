@@ -1,0 +1,9 @@
+{
+  "dataset": "DFL Mouse Dynamics",
+  "task": "unsupervised population behavioral atypicality; not clinical classification",
+  "users": 21,
+  "samples": 402,
+  "features": 7,
+  "model": "IsolationForest",
+  "split": "No clinical train/test task; scoring model fit only on supplied behavior sessions"
+}

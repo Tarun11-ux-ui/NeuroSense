@@ -1,0 +1,7 @@
+{
+  "dataset": "DFL Mouse Dynamics",
+  "task": "behavioral atypicality; no clinical labels",
+  "users": 20,
+  "samples": 399,
+  "model": "IsolationForest"
+}

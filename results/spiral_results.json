@@ -1,0 +1,174 @@
+{
+  "audit": {
+    "readme_found": false,
+    "source_archive": "D:\\NeuroSense\\datasets\\NewHandPd Dataset.zip",
+    "total_images": 264,
+    "total_grouping_ids": 38,
+    "class_distribution": {
+      "0": 140,
+      "1": 124
+    },
+    "filename_rule": "^sp\\d+-([HP])(\\d+)\\.(jpg|jpeg|png)$; discard H/P class marker and group on numeric token",
+    "cross_class_grouping_ids": 28,
+    "ambiguous_or_unmappable_filenames": 0,
+    "subject_leakage_detected": false,
+    "identity_caveat": "Filename grouping is conservative fallback, not verified real-person identity."
+  },
+  "split": {
+    "train": {
+      "subjects": 22,
+      "images": 152,
+      "class_distribution": {
+        "0": 84,
+        "1": 68
+      }
+    },
+    "validation": {
+      "subjects": 8,
+      "images": 52,
+      "class_distribution": {
+        "0": 24,
+        "1": 28
+      }
+    },
+    "test": {
+      "subjects": 8,
+      "images": 60,
+      "class_distribution": {
+        "0": 32,
+        "1": 28
+      }
+    }
+  },
+  "validation_results": {
+    "hog_svm": {
+      "accuracy": 0.75,
+      "precision": 0.8,
+      "recall": 0.7142857142857143,
+      "f1": 0.7547169811320755,
+      "roc_auc": 0.8839285714285715,
+      "confusion_matrix": [
+        [
+          19,
+          5
+        ],
+        [
+          8,
+          20
+        ]
+      ]
+    },
+    "compact_cnn": {
+      "accuracy": 0.46153846153846156,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "roc_auc": 0.8660714285714286,
+      "confusion_matrix": [
+        [
+          24,
+          0
+        ],
+        [
+          28,
+          0
+        ]
+      ]
+    },
+    "resnet18_transfer": {
+      "accuracy": 0.8269230769230769,
+      "precision": 0.8518518518518519,
+      "recall": 0.8214285714285714,
+      "f1": 0.8363636363636363,
+      "roc_auc": 0.9494047619047619,
+      "confusion_matrix": [
+        [
+          20,
+          4
+        ],
+        [
+          5,
+          23
+        ]
+      ]
+    }
+  },
+  "selected_by_validation": "resnet18_transfer",
+  "final_untouched_test": {
+    "accuracy": 0.8166666666666667,
+    "precision": 0.717948717948718,
+    "recall": 1.0,
+    "f1": 0.835820895522388,
+    "roc_auc": 0.875,
+    "confusion_matrix": [
+      [
+        21,
+        11
+      ],
+      [
+        0,
+        28
+      ]
+    ]
+  },
+  "training_history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.6936491876840591,
+      "train_accuracy": 0.5855263157894737,
+      "validation_accuracy": 0.5769230769230769,
+      "validation_f1": 0.45,
+      "validation_roc_auc": 0.8214285714285715
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.576202529668808,
+      "train_accuracy": 0.625,
+      "validation_accuracy": 0.8269230769230769,
+      "validation_f1": 0.8363636363636363,
+      "validation_roc_auc": 0.9494047619047619
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.5078454732894897,
+      "train_accuracy": 0.7697368421052632,
+      "validation_accuracy": 0.5384615384615384,
+      "validation_f1": 0.25,
+      "validation_roc_auc": 0.9464285714285714
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.5117724120616913,
+      "train_accuracy": 0.7302631578947368,
+      "validation_accuracy": 0.5576923076923077,
+      "validation_f1": 0.30303030303030304,
+      "validation_roc_auc": 0.9315476190476191
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.46060089468955995,
+      "train_accuracy": 0.7631578947368421,
+      "validation_accuracy": 0.6730769230769231,
+      "validation_f1": 0.5853658536585366,
+      "validation_roc_auc": 0.9211309523809523
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.46030275523662567,
+      "train_accuracy": 0.7631578947368421,
+      "validation_accuracy": 0.7884615384615384,
+      "validation_f1": 0.7843137254901961,
+      "validation_roc_auc": 0.9017857142857144
+    }
+  ],
+  "previous_result_potentially_optimistic": {
+    "split": "class-scoped IDs (potentially optimistic)",
+    "test_accuracy": 0.7857142857142857,
+    "test_precision": 0.7,
+    "test_recall": 1.0,
+    "test_f1": 0.8235294117647058,
+    "test_roc_auc": 0.9170918367346939,
+    "note": "Retained for comparison only; not combined with this evaluation."
+  },
+  "conservative_result_note": "Current final metrics use only the corrected unscoped filename grouping and untouched test split."
+}

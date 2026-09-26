@@ -1,0 +1,7 @@
+{
+  "dataset": "neuroQWERTY MIT-CSXPD",
+  "task": "PD/control classification using documented gt labels",
+  "split": "GroupShuffleSplit by cohort-scoped pID",
+  "selected_model": "logistic_regression",
+  "clinical_diagnosis": false
+}

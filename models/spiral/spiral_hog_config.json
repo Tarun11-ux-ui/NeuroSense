@@ -1,0 +1,13 @@
+{
+  "orientations": 9,
+  "pixels_per_cell": [
+    16,
+    16
+  ],
+  "cells_per_block": [
+    2,
+    2
+  ],
+  "block_norm": "L2-Hys",
+  "classifier": "RBF SVM, C=1, balanced classes"
+}

@@ -1,0 +1,119 @@
+{
+  "dataset": "Balabit Mouse Dynamics Challenge",
+  "task": "legal/illegal authentication behavior; not clinical classification",
+  "accounts": 10,
+  "sessions": 816,
+  "features": 7,
+  "split": "Stratified Shuffle Split",
+  "selected_model": "lightgbm",
+  "comparison": {
+    "logistic_regression": {
+      "accuracy": 0.6036585365853658,
+      "precision": 0.625,
+      "recall": 0.49382716049382713,
+      "f1": 0.5517241379310345,
+      "confusion_matrix": [
+        [
+          59,
+          24
+        ],
+        [
+          41,
+          40
+        ]
+      ],
+      "brier_score": 0.23737485856436816,
+      "roc_auc": 0.6351331250929645
+    },
+    "random_forest": {
+      "accuracy": 0.5792682926829268,
+      "precision": 0.5967741935483871,
+      "recall": 0.4567901234567901,
+      "f1": 0.5174825174825175,
+      "confusion_matrix": [
+        [
+          58,
+          25
+        ],
+        [
+          44,
+          37
+        ]
+      ],
+      "brier_score": 0.2382125161383829,
+      "roc_auc": 0.6288859140264762
+    },
+    "hist_gradient_boosting": {
+      "accuracy": 0.6097560975609756,
+      "precision": 0.6545454545454545,
+      "recall": 0.4444444444444444,
+      "f1": 0.5294117647058824,
+      "confusion_matrix": [
+        [
+          64,
+          19
+        ],
+        [
+          45,
+          36
+        ]
+      ],
+      "brier_score": 0.23126931399892822,
+      "roc_auc": 0.6542466160940057
+    },
+    "xgboost": {
+      "accuracy": 0.6158536585365854,
+      "precision": 0.6666666666666666,
+      "recall": 0.4444444444444444,
+      "f1": 0.5333333333333333,
+      "confusion_matrix": [
+        [
+          65,
+          18
+        ],
+        [
+          45,
+          36
+        ]
+      ],
+      "brier_score": 0.22939161078672707,
+      "roc_auc": 0.6636918042540532
+    },
+    "lightgbm": {
+      "accuracy": 0.6341463414634146,
+      "precision": 0.6909090909090909,
+      "recall": 0.4691358024691358,
+      "f1": 0.5588235294117647,
+      "confusion_matrix": [
+        [
+          66,
+          17
+        ],
+        [
+          43,
+          38
+        ]
+      ],
+      "brier_score": 0.23145716787100762,
+      "roc_auc": 0.654767217016213
+    },
+    "mlp_lstm_proxy": {
+      "accuracy": 0.5975609756097561,
+      "precision": 0.631578947368421,
+      "recall": 0.4444444444444444,
+      "f1": 0.5217391304347826,
+      "confusion_matrix": [
+        [
+          62,
+          21
+        ],
+        [
+          45,
+          36
+        ]
+      ],
+      "brier_score": 0.2415682334041954,
+      "roc_auc": 0.644355198572066
+    }
+  }
+}

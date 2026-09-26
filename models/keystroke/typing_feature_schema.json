@@ -1,0 +1,14 @@
+{
+  "features": [
+    "n_events",
+    "typing_rate",
+    "hold_mean",
+    "hold_std",
+    "hold_median",
+    "hold_p90",
+    "flight_mean",
+    "flight_std",
+    "flight_median",
+    "flight_p90"
+  ]
+}

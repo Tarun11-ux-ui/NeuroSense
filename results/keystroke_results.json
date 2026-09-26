@@ -1,0 +1,119 @@
+{
+  "dataset": "neuroQWERTY MIT-CSXPD",
+  "task": "PD/control clinical classification",
+  "subjects": 85,
+  "samples": 116,
+  "features": 10,
+  "split": "Stratified Shuffle Split",
+  "selected_model": "logistic_regression",
+  "comparison": {
+    "logistic_regression": {
+      "accuracy": 0.5,
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6666666666666666,
+      "confusion_matrix": [
+        [
+          0,
+          12
+        ],
+        [
+          0,
+          12
+        ]
+      ],
+      "brier_score": 0.25,
+      "roc_auc": 0.5
+    },
+    "random_forest": {
+      "accuracy": 0.5,
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6666666666666666,
+      "confusion_matrix": [
+        [
+          0,
+          12
+        ],
+        [
+          0,
+          12
+        ]
+      ],
+      "brier_score": 0.2500004117922637,
+      "roc_auc": 0.5
+    },
+    "hist_gradient_boosting": {
+      "accuracy": 0.5,
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6666666666666666,
+      "confusion_matrix": [
+        [
+          0,
+          12
+        ],
+        [
+          0,
+          12
+        ]
+      ],
+      "brier_score": 0.2504725897920605,
+      "roc_auc": 0.5
+    },
+    "xgboost": {
+      "accuracy": 0.5,
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6666666666666666,
+      "confusion_matrix": [
+        [
+          0,
+          12
+        ],
+        [
+          0,
+          12
+        ]
+      ],
+      "brier_score": 0.25047258956671214,
+      "roc_auc": 0.5
+    },
+    "lightgbm": {
+      "accuracy": 0.5,
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6666666666666666,
+      "confusion_matrix": [
+        [
+          0,
+          12
+        ],
+        [
+          0,
+          12
+        ]
+      ],
+      "brier_score": 0.2504725897920605,
+      "roc_auc": 0.5
+    },
+    "mlp_lstm_proxy": {
+      "accuracy": 0.5,
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6666666666666666,
+      "confusion_matrix": [
+        [
+          0,
+          12
+        ],
+        [
+          0,
+          12
+        ]
+      ],
+      "brier_score": 0.2503107879208996,
+      "roc_auc": 0.5
+    }
+  }
+}
