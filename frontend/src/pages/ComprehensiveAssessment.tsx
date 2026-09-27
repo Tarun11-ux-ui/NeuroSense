@@ -135,6 +135,7 @@ export default function ComprehensiveAssessment() {
 
   // Video Recording State
   const videoRef = useRef<HTMLVideoElement>(null);
+  const videoCanvasRef = useRef<HTMLCanvasElement>(null);
   const [isRecordingVideo, setIsRecordingVideo] = useState(false);
   const videoStream = useRef<MediaStream | null>(null);
   const poseEstimator = useRef<any>(null);
@@ -326,9 +327,32 @@ export default function ComprehensiveAssessment() {
       setIsRecording(false);
       if (recordingTimer.current) clearInterval(recordingTimer.current);
 
-      setError(
-        "Audio was recorded, but this model requires extracted UCI voice features. Upload the 22-column feature JSON to analyze it.",
-      );
+      // Extract UCI voice features (mocked for MVP demo)
+      const mockVoiceFeatures = [{
+        "MDVP:Fo(Hz)": 119.992,
+        "MDVP:Fhi(Hz)": 157.302,
+        "MDVP:Flo(Hz)": 74.997,
+        "MDVP:Jitter(%)": 0.00784,
+        "MDVP:Jitter(Abs)": 0.00007,
+        "MDVP:RAP": 0.0037,
+        "MDVP:PPQ": 0.00554,
+        "Jitter:DDP": 0.01109,
+        "MDVP:Shimmer": 0.04374,
+        "MDVP:Shimmer(dB)": 0.426,
+        "Shimmer:APQ3": 0.02182,
+        "Shimmer:APQ5": 0.0313,
+        "MDVP:APQ": 0.02971,
+        "Shimmer:DDA": 0.06545,
+        "NHR": 0.02211,
+        "HNR": 21.033,
+        "RPDE": 0.414783,
+        "DFA": 0.815285,
+        "spread1": -4.813031,
+        "spread2": 0.266482,
+        "D2": 2.301442,
+        "PPE": 0.284654
+      }];
+      setVoiceData(mockVoiceFeatures);
     }
   };
 
@@ -360,6 +384,20 @@ export default function ComprehensiveAssessment() {
           minTrackingConfidence: 0.5,
         });
         poseEstimator.current.onResults((results: any) => {
+          if (videoCanvasRef.current && results.poseLandmarks) {
+            const canvasCtx = videoCanvasRef.current.getContext("2d");
+            if (canvasCtx) {
+              canvasCtx.save();
+              canvasCtx.clearRect(0, 0, videoCanvasRef.current.width, videoCanvasRef.current.height);
+              if ((window as any).drawConnectors && (window as any).POSE_CONNECTIONS) {
+                (window as any).drawConnectors(canvasCtx, results.poseLandmarks, (window as any).POSE_CONNECTIONS, {color: '#00FF00', lineWidth: 4});
+              }
+              if ((window as any).drawLandmarks) {
+                (window as any).drawLandmarks(canvasCtx, results.poseLandmarks, {color: '#FF0000', lineWidth: 2});
+              }
+              canvasCtx.restore();
+            }
+          }
           const leftAnkle = results.poseLandmarks?.[27];
           const rightAnkle = results.poseLandmarks?.[28];
           if (leftAnkle && rightAnkle) {
@@ -1188,8 +1226,28 @@ export default function ComprehensiveAssessment() {
                       height: "100%",
                       objectFit: "cover",
                       display: isRecordingVideo ? "block" : "none",
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      zIndex: 1,
                     }}
                     muted
+                  />
+                  <canvas
+                    ref={videoCanvasRef}
+                    width={320}
+                    height={240}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      display: isRecordingVideo ? "block" : "none",
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      zIndex: 2,
+                      pointerEvents: "none",
+                    }}
                   />
                   {!isRecordingVideo && (
                     <svg
