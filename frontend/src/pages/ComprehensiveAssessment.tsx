@@ -9,7 +9,7 @@ import {
   type CaptureDevice,
 } from "../utils/mediaDevices";
 import { generateFHIRBundle } from "../utils/fhir";
-
+import DigitalTwin from "../components/DigitalTwin";
 const mediaPipe = globalThis as typeof globalThis & {
   Pose?: new (options: { locateFile: (file: string) => string }) => any;
   Camera?: new (video: HTMLVideoElement, options: any) => any;
@@ -2045,6 +2045,32 @@ export default function ComprehensiveAssessment() {
                           : "Unknown / N/A"}
                     </div>
                   </div>
+                </div>
+
+                <div style={{
+                  background: "var(--panel-bg)",
+                  padding: "1.5rem",
+                  borderRadius: "12px",
+                  border: "1px solid var(--panel-border)",
+                  marginBottom: "1.5rem",
+                  marginTop: "1.5rem"
+                }}>
+                  <div style={{ color: "var(--text-main)", display: "flex", alignItems: "center", gap: "0.75rem", fontSize: "1.15rem", fontWeight: 600, marginBottom: "1rem" }}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2">
+                      <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path>
+                      <line x1="16" y1="8" x2="2" y2="22"></line>
+                      <line x1="17.5" y1="15" x2="9" y2="15"></line>
+                    </svg>
+                    Digital Motor Twin Visualization
+                  </div>
+                  <DigitalTwin risks={{
+                    head: fusion.modality_scores?.facial || fusion.modality_scores?.voice || 0,
+                    leftArm: fusion.modality_scores?.spiral || fusion.modality_scores?.reaction || 0,
+                    rightArm: fusion.modality_scores?.spiral || fusion.modality_scores?.keystroke || 0,
+                    torso: fusedRisk,
+                    leftLeg: fusion.modality_scores?.gait || 0,
+                    rightLeg: fusion.modality_scores?.gait || 0,
+                  }} />
                 </div>
 
                 <div

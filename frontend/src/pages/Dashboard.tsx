@@ -380,22 +380,77 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="page-header" style={{ marginBottom: "2.5rem" }}>
-        <h1
-          style={{
-            fontSize: "2.5rem",
-            marginBottom: "0.75rem",
-            background:
-              "linear-gradient(90deg, var(--primary) 0%, #3b82f6 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-          }}
-        >
-          NeuroSense Dashboard
-        </h1>
-        <p style={{ fontSize: "1.15rem", color: "var(--text-muted)" }}>
-          Clinical Intelligence & Remote Patient Monitoring Platform
-        </p>
+      <div className="page-header" style={{ marginBottom: "2.5rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end", textAlign: "left" }}>
+        <div>
+          <h1
+            style={{
+              fontSize: "2.5rem",
+              marginBottom: "0.5rem",
+              background:
+                "linear-gradient(90deg, var(--primary) 0%, #3b82f6 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            NeuroSense Dashboard
+          </h1>
+          <p style={{ fontSize: "1.15rem", color: "var(--text-muted)", margin: 0 }}>
+            Clinical Intelligence & Remote Patient Monitoring Platform
+          </p>
+        </div>
+        <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+          <span 
+            className="badge badge-active" 
+            style={{ 
+              fontSize: "0.8rem", 
+              padding: "0.4rem 1rem", 
+              backgroundColor: "rgba(16, 185, 129, 0.1)", 
+              color: "#10b981", 
+              border: "1px solid rgba(16, 185, 129, 0.2)",
+              borderRadius: "20px",
+              fontWeight: 600,
+              letterSpacing: "0.5px",
+              textTransform: "uppercase"
+            }}
+          >
+            System Ready
+          </span>
+          <button
+            className="btn"
+            onClick={() => navigate("/comprehensive")}
+            style={{ 
+              padding: "0.8rem 1.5rem", 
+              fontSize: "1rem", 
+              display: "flex", 
+              alignItems: "center", 
+              gap: "0.5rem",
+              background: "linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%)",
+              boxShadow: "0 8px 20px -4px rgba(139, 92, 246, 0.4)",
+              border: "none",
+              color: "white",
+              borderRadius: "12px",
+              fontWeight: 600,
+              cursor: "pointer",
+              transition: "transform 0.2s ease, box-shadow 0.2s ease"
+            }}
+            onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+            onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 9.36l-7.1 7.1a1 1 0 0 1-1.4 0l-2.8-2.8a1 1 0 0 1 0-1.4l7.1-7.1a6 6 0 0 1 9.36-7.94z" />
+            </svg>
+            Comprehensive Assessment
+          </button>
+        </div>
       </div>
 
       {/* System Stats Row */}
@@ -504,218 +559,219 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {companionUrl && (
-        <section className="tracking-panel" style={{ marginBottom: "3.5rem" }}>
-          <div className="tracking-header" style={{ borderBottom: "none" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))", gap: "1.5rem", marginBottom: "3.5rem" }}>
+        <section className="tracking-panel" style={{ margin: 0, height: "100%", gridColumn: "span 2" }}>
+          <div className="tracking-header">
             <div>
-              <span className="section-kicker">Mobile Integration</span>
+              <span className="section-kicker">Patient monitoring</span>
               <h2 className="tracking-title">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--primary)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
                 </svg>
-                Mobile Full Access
+                Longitudinal tracking
               </h2>
               <p className="tracking-subtitle">
-                Scan this QR code with your phone to instantly log in. You can use all modules, including Voice and Gait capture, directly from your mobile browser without entering credentials again.
+                Review screening risk movement across completed assessments.
               </p>
             </div>
-            <div style={{ background: "white", padding: "1rem", borderRadius: "12px", border: "1px solid var(--panel-border)" }}>
-              <QRCodeSVG value={companionUrl} size={120} />
-            </div>
-          </div>
-        </section>
-      )}
-
-      <section className="tracking-panel">
-        <div className="tracking-header">
-          <div>
-            <span className="section-kicker">Patient monitoring</span>
-            <h2 className="tracking-title">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="var(--primary)"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap", justifyContent: "flex-end" }}>
+              <button 
+                className="btn btn-outline" 
+                style={{ padding: "0 1rem", fontSize: "0.85rem", height: "38px", display: "flex", alignItems: "center", gap: "0.5rem" }}
+                onClick={() => setShowAddPatient(true)}
               >
-                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-              </svg>
-              Longitudinal tracking
-            </h2>
-            <p className="tracking-subtitle">
-              Review screening risk movement across completed assessments.
-            </p>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-            <button 
-              className="btn btn-outline" 
-              style={{ padding: "0 1rem", fontSize: "0.85rem", height: "38px", display: "flex", alignItems: "center", gap: "0.5rem" }}
-              onClick={() => setShowAddPatient(true)}
-            >
-              + New Patient
-            </button>
-            {patients.length > 0 && (
-              <>
-                <button 
-                  className="btn btn-outline" 
-                  style={{ padding: "0 1rem", fontSize: "0.85rem", height: "38px", borderColor: "var(--primary)", color: "var(--primary)", display: "flex", alignItems: "center", gap: "0.5rem" }}
-                  onClick={() => window.open(`/api/patients/${selectedPatient}/fhir`, "_blank")}
-                  title="Export latest assessment in FHIR format for EMR integration"
-                >
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
-                  </svg>
-                  Export EMR (FHIR)
-                </button>
-                <label className="patient-select-wrap">
-                  <span style={{ fontSize: "0.75rem" }}>Patient record</span>
-                  <select
-                    className="patient-select"
-                    style={{ height: "38px", padding: "0 2rem 0 0.75rem" }}
-                    value={selectedPatient}
-                    onChange={(e) => setSelectedPatient(e.target.value)}
+                + New Patient
+              </button>
+              {patients.length > 0 && (
+                <>
+                  <button 
+                    className="btn btn-outline" 
+                    style={{ padding: "0 1rem", fontSize: "0.85rem", height: "38px", borderColor: "var(--primary)", color: "var(--primary)", display: "flex", alignItems: "center", gap: "0.5rem" }}
+                    onClick={() => window.open(`/api/patients/${selectedPatient}/fhir`, "_blank")}
+                    title="Export latest assessment in FHIR format for EMR integration"
                   >
-                    {patients.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.name} ({p.id})
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </>
-            )}
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                    </svg>
+                    Export EMR
+                  </button>
+                  <label className="patient-select-wrap">
+                    <span style={{ fontSize: "0.75rem" }}>Patient record</span>
+                    <select
+                      className="patient-select"
+                      style={{ height: "38px", padding: "0 2rem 0 0.75rem" }}
+                      value={selectedPatient}
+                      onChange={(e) => setSelectedPatient(e.target.value)}
+                    >
+                      {patients.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name} ({p.id})
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </>
+              )}
+            </div>
           </div>
-        </div>
 
-        {patients.length > 0 ? (
-          <>
+          {patients.length > 0 ? (
+            <>
+            <div className="tracking-summary">
+              <div className="tracking-patient">
+                <span className="patient-avatar">
+                  {selectedPatient.slice(-2)}
+                </span>
+                <div>
+                  <span className="summary-label">Active patient</span>
+                  <strong>{selectedPatientData ? `${selectedPatientData.name} (${selectedPatientData.id})` : selectedPatient}</strong>
+                </div>
+                <span className="tracking-status">
+                  <span /> Monitoring active
+                </span>
+              </div>
+              <div className="tracking-metrics">
+                <div className="tracking-metric">
+                  <span className="summary-label">Latest risk score</span>
+                  <strong>
+                    {latestHistory ? `${latestHistory.score.toFixed(1)}%` : "--"}
+                  </strong>
+                </div>
+                <div className="tracking-metric">
+                  <span className="summary-label">Change vs prior</span>
+                  <strong
+                    className={
+                      riskChange !== null && riskChange > 0
+                        ? "metric-up"
+                        : "metric-down"
+                    }
+                  >
+                    {riskChange === null
+                      ? "--"
+                      : `${riskChange > 0 ? "+" : ""}${riskChange.toFixed(1)}%`}
+                  </strong>
+                </div>
+                <div className="tracking-metric tracking-interpretation">
+                  <span className="summary-label">Current interpretation</span>
+                  <strong>{riskStatus}</strong>
+                </div>
+              </div>
+            </div>
 
-          <div className="tracking-summary">
-            <div className="tracking-patient">
-              <span className="patient-avatar">
-                {selectedPatient.slice(-2)}
-              </span>
+            <div className="tracking-chart">
+              {patientHistory.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart
+                    data={patientHistory}
+                    margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+                  >
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="var(--panel-border)"
+                      vertical={false}
+                    />
+                    <XAxis
+                      dataKey="date"
+                      stroke="var(--text-muted)"
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
+                    />
+                    <YAxis
+                      stroke="var(--text-muted)"
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
+                      domain={[0, 100]}
+                      tickFormatter={(value) => `${value}%`}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        borderRadius: "8px",
+                        border: "1px solid var(--panel-border)",
+                        boxShadow: "0 4px 6px rgba(0,0,0,0.05)",
+                      }}
+                      itemStyle={{ color: "var(--primary)", fontWeight: 600 }}
+                      formatter={(value) => [`${value}%`, "Risk score"]}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="score"
+                      name="Risk score"
+                      stroke="var(--primary)"
+                      strokeWidth={3}
+                      dot={{ r: 4, strokeWidth: 2 }}
+                      activeDot={{ r: 6 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : (
+                <div
+                  style={{
+                    display: "flex",
+                    height: "100%",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "var(--text-muted)",
+                  }}
+                >
+                  No history data available for this patient.
+                </div>
+              )}
+            </div>
+            <p className="tracking-note">
+              Screening scores support clinical review and should be interpreted
+              alongside patient history and professional assessment.
+            </p>
+            </>
+          ) : (
+            <div style={{ padding: "4rem 2rem", textAlign: "center", color: "var(--text-muted)", background: "rgba(0,0,0,0.02)", borderRadius: "8px", flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+              <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ margin: "0 auto 1rem", opacity: 0.5 }}>
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              <h3 style={{ fontSize: "1.2rem", color: "var(--text-main)", marginBottom: "0.5rem" }}>No Patients Found</h3>
+              <p style={{ marginBottom: "1.5rem" }}>Your clinical database is currently empty. Add a patient to begin tracking.</p>
+              <button className="btn btn-primary" style={{ margin: "0 auto" }} onClick={() => setShowAddPatient(true)}>
+                + Add First Patient
+              </button>
+            </div>
+          )}
+        </section>
+
+        {companionUrl && (
+          <section className="tracking-panel" style={{ margin: 0, height: "100%", display: "flex", flexDirection: "column", gridColumn: "span 1" }}>
+            <div className="tracking-header" style={{ borderBottom: "none", flex: 1 }}>
               <div>
-                <span className="summary-label">Active patient</span>
-                <strong>{selectedPatientData ? `${selectedPatientData.name} (${selectedPatientData.id})` : selectedPatient}</strong>
-              </div>
-              <span className="tracking-status">
-                <span /> Monitoring active
-              </span>
-            </div>
-            <div className="tracking-metrics">
-              <div className="tracking-metric">
-                <span className="summary-label">Latest risk score</span>
-                <strong>
-                  {latestHistory ? `${latestHistory.score.toFixed(1)}%` : "--"}
-                </strong>
-              </div>
-              <div className="tracking-metric">
-                <span className="summary-label">Change vs prior</span>
-                <strong
-                  className={
-                    riskChange !== null && riskChange > 0
-                      ? "metric-up"
-                      : "metric-down"
-                  }
-                >
-                  {riskChange === null
-                    ? "--"
-                    : `${riskChange > 0 ? "+" : ""}${riskChange.toFixed(1)}%`}
-                </strong>
-              </div>
-              <div className="tracking-metric tracking-interpretation">
-                <span className="summary-label">Current interpretation</span>
-                <strong>{riskStatus}</strong>
+                <span className="section-kicker">Mobile Integration</span>
+                <h2 className="tracking-title">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line>
+                  </svg>
+                  Mobile Full Access
+                </h2>
+                <p className="tracking-subtitle">
+                  Scan this QR code with your phone to instantly log in. You can use all modules, including Voice and Gait capture, directly from your mobile browser without entering credentials again.
+                </p>
               </div>
             </div>
-          </div>
-
-          <div className="tracking-chart">
-            {patientHistory.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={patientHistory}
-                  margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
-                >
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="var(--panel-border)"
-                    vertical={false}
-                  />
-                  <XAxis
-                    dataKey="date"
-                    stroke="var(--text-muted)"
-                    fontSize={12}
-                    tickLine={false}
-                    axisLine={false}
-                  />
-                  <YAxis
-                    stroke="var(--text-muted)"
-                    fontSize={12}
-                    tickLine={false}
-                    axisLine={false}
-                    domain={[0, 100]}
-                    tickFormatter={(value) => `${value}%`}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      borderRadius: "8px",
-                      border: "1px solid var(--panel-border)",
-                      boxShadow: "0 4px 6px rgba(0,0,0,0.05)",
-                    }}
-                    itemStyle={{ color: "var(--primary)", fontWeight: 600 }}
-                    formatter={(value) => [`${value}%`, "Risk score"]}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="score"
-                    name="Risk score"
-                    stroke="var(--primary)"
-                    strokeWidth={3}
-                    dot={{ r: 4, strokeWidth: 2 }}
-                    activeDot={{ r: 6 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            ) : (
-              <div
-                style={{
-                  display: "flex",
-                  height: "100%",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "var(--text-muted)",
-                }}
-              >
-                No history data available for this patient.
-              </div>
-            )}
-          </div>
-          <p className="tracking-note">
-            Screening scores support clinical review and should be interpreted
-            alongside patient history and professional assessment.
-          </p>
-          </>
-        ) : (
-          <div style={{ padding: "4rem 2rem", textAlign: "center", color: "var(--text-muted)", background: "rgba(0,0,0,0.02)", borderRadius: "8px" }}>
-            <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ margin: "0 auto 1rem", opacity: 0.5 }}>
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
-            <h3 style={{ fontSize: "1.2rem", color: "var(--text-main)", marginBottom: "0.5rem" }}>No Patients Found</h3>
-            <p style={{ marginBottom: "1.5rem" }}>Your clinical database is currently empty. Add a patient to begin tracking.</p>
-            <button className="btn btn-primary" onClick={() => setShowAddPatient(true)}>
-              + Add First Patient
-            </button>
-          </div>
+            <div style={{ background: "white", padding: "1.5rem", borderRadius: "12px", border: "1px solid var(--panel-border)", alignSelf: "center", marginBottom: "1rem" }}>
+              <QRCodeSVG value={companionUrl} size={160} />
+            </div>
+          </section>
         )}
-      </section>
+      </div>
 
       <div
         style={{
@@ -734,58 +790,8 @@ export default function Dashboard() {
             color: "var(--text-main)",
           }}
         >
-          Diagnostic Modalities
+          Individual Diagnostic Modalities
         </h2>
-        <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-          <button
-            className="btn"
-            onClick={() => navigate("/comprehensive")}
-            style={{ 
-              padding: "0.6rem 1.2rem", 
-              fontSize: "0.95rem", 
-              display: "flex", 
-              alignItems: "center", 
-              gap: "0.5rem",
-              background: "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
-              boxShadow: "0 4px 14px 0 rgba(139, 92, 246, 0.39)",
-              border: "none",
-              color: "white",
-              borderRadius: "8px",
-              fontWeight: 500,
-              cursor: "pointer"
-            }}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              width="18"
-              height="18"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 9.36l-7.1 7.1a1 1 0 0 1-1.4 0l-2.8-2.8a1 1 0 0 1 0-1.4l7.1-7.1a6 6 0 0 1 9.36-7.94z" />
-            </svg>
-            Comprehensive Assessment
-          </button>
-          <span 
-            className="badge badge-active" 
-            style={{ 
-              fontSize: "0.8rem", 
-              padding: "0.3rem 0.8rem", 
-              backgroundColor: "rgba(16, 185, 129, 0.1)", 
-              color: "#10b981", 
-              border: "1px solid rgba(16, 185, 129, 0.2)",
-              borderRadius: "20px",
-              fontWeight: 600,
-              letterSpacing: "0.5px",
-              textTransform: "uppercase"
-            }}
-          >
-            System Ready
-          </span>
-        </div>
       </div>
 
       <div className="modules-grid">

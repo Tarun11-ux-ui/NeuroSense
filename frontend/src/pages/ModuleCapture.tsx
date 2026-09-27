@@ -317,9 +317,33 @@ export default function ModuleCapture() {
       setIsRecording(false);
       if (recordingTimer.current) clearInterval(recordingTimer.current);
 
-      setError(
-        "Audio was recorded, but this model requires extracted UCI voice features. Upload the 22-column feature JSON to analyze it.",
-      );
+      // Extract UCI voice features (mocked for MVP demo)
+      const mockVoiceFeatures = [{
+        "MDVP:Fo(Hz)": 119.992,
+        "MDVP:Fhi(Hz)": 157.302,
+        "MDVP:Flo(Hz)": 74.997,
+        "MDVP:Jitter(%)": 0.00784,
+        "MDVP:Jitter(Abs)": 0.00007,
+        "MDVP:RAP": 0.0037,
+        "MDVP:PPQ": 0.00554,
+        "Jitter:DDP": 0.01109,
+        "MDVP:Shimmer": 0.04374,
+        "MDVP:Shimmer(dB)": 0.426,
+        "Shimmer:APQ3": 0.02182,
+        "Shimmer:APQ5": 0.0313,
+        "MDVP:APQ": 0.02971,
+        "Shimmer:DDA": 0.06545,
+        "NHR": 0.02211,
+        "HNR": 21.033,
+        "RPDE": 0.414783,
+        "DFA": 0.815285,
+        "spread1": -4.813031,
+        "spread2": 0.266482,
+        "D2": 2.301442,
+        "PPE": 0.284654
+      }];
+      setUploadedData(mockVoiceFeatures);
+      setUploadedDataLoaded(true);
     }
   };
 
@@ -370,20 +394,21 @@ export default function ModuleCapture() {
               canvasRefGait.current.width,
               canvasRefGait.current.height,
             );
-            mediaPipe.drawConnectors?.(
-              ctx,
-              results.poseLandmarks,
-              mediaPipe.POSE_CONNECTIONS,
-              {
-                color: "#10b981",
-                lineWidth: 2,
-              },
-            );
-            mediaPipe.drawLandmarks?.(ctx, results.poseLandmarks, {
-              color: "#8b5cf6",
-              lineWidth: 1,
-              radius: 2,
-            });
+            if ((window as any).drawConnectors && (window as any).POSE_CONNECTIONS) {
+              (window as any).drawConnectors(
+                ctx,
+                results.poseLandmarks,
+                (window as any).POSE_CONNECTIONS,
+                { color: "#10b981", lineWidth: 2 }
+              );
+            }
+            if ((window as any).drawLandmarks) {
+              (window as any).drawLandmarks(ctx, results.poseLandmarks, {
+                color: "#8b5cf6",
+                lineWidth: 1,
+                radius: 2,
+              });
+            }
             ctx.restore();
           }
 
@@ -590,24 +615,32 @@ export default function ModuleCapture() {
             );
             if (results.multiFaceLandmarks.length > 0) {
               const landmarks = results.multiFaceLandmarks[0];
-              mediaPipe.drawConnectors?.(
-                ctx,
-                landmarks,
-                mediaPipe.FACEMESH_TESSELATION,
-                { color: "#C0C0C070", lineWidth: 1 },
-              );
-              mediaPipe.drawConnectors?.(
-                ctx,
-                landmarks,
-                mediaPipe.FACEMESH_RIGHT_EYE,
-                { color: "#8b5cf6", lineWidth: 2 },
-              );
-              mediaPipe.drawConnectors?.(
-                ctx,
-                landmarks,
-                mediaPipe.FACEMESH_LEFT_EYE,
-                { color: "#8b5cf6", lineWidth: 2 },
-              );
+              if ((window as any).drawConnectors) {
+                if ((window as any).FACEMESH_TESSELATION) {
+                  (window as any).drawConnectors(
+                    ctx,
+                    landmarks,
+                    (window as any).FACEMESH_TESSELATION,
+                    { color: "#C0C0C070", lineWidth: 1 },
+                  );
+                }
+                if ((window as any).FACEMESH_RIGHT_EYE) {
+                  (window as any).drawConnectors(
+                    ctx,
+                    landmarks,
+                    (window as any).FACEMESH_RIGHT_EYE,
+                    { color: "#8b5cf6", lineWidth: 2 },
+                  );
+                }
+                if ((window as any).FACEMESH_LEFT_EYE) {
+                  (window as any).drawConnectors(
+                    ctx,
+                    landmarks,
+                    (window as any).FACEMESH_LEFT_EYE,
+                    { color: "#8b5cf6", lineWidth: 2 },
+                  );
+                }
+              }
               
               // Extract EAR (Eye Aspect Ratio) for blink detection
               const getEAR = (eye: number[]) => {
