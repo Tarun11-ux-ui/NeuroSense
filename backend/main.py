@@ -27,10 +27,8 @@ security = HTTPBearer()
 def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     token = credentials.credentials
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM], options={"verify_exp": False})
         return payload.get("sub")
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
@@ -324,10 +322,93 @@ def verify_otp(req: OTPVerify):
     if datetime.datetime.now() > db_expiry:
         raise HTTPException(status_code=400, detail="OTP has expired. Please request a new one.")
         
-    token_expiry = datetime.datetime.utcnow() + datetime.timedelta(hours=24)
+    token_expiry = datetime.datetime.utcnow() + datetime.timedelta(days=30)
     jwt_token = jwt.encode({"sub": email, "exp": token_expiry}, SECRET_KEY, algorithm=ALGORITHM)
         
     return {"status": "success", "message": "Login successful", "access_token": jwt_token, "token_type": "bearer"}
+
+def evaluate_data_quality(request: PredictRequest):
+    quality = {
+        "overall_score": 100,
+        "valid_modalities": 0,
+        "total_modalities": 0,
+        "details": {}
+    }
+    
+    deductions = 0
+
+    if request.keystroke is not None:
+        quality["total_modalities"] += 1
+        if len(request.keystroke) < 20:
+            quality["details"]["keystroke"] = {"status": "warning", "message": "Too few keystrokes (low confidence)"}
+            deductions += 15
+        else:
+            quality["details"]["keystroke"] = {"status": "valid", "message": "Valid"}
+            quality["valid_modalities"] += 1
+
+    if request.mouse_dfl is not None or request.mouse_balabit is not None:
+        quality["total_modalities"] += 1
+        mouse_events = len(request.mouse_dfl or []) + len(request.mouse_balabit or [])
+        if mouse_events < 50:
+            quality["details"]["mouse"] = {"status": "warning", "message": "Insufficient mouse trajectory data"}
+            deductions += 15
+        else:
+            quality["details"]["mouse"] = {"status": "valid", "message": "Valid"}
+            quality["valid_modalities"] += 1
+
+    if request.voice is not None:
+        quality["total_modalities"] += 1
+        if len(request.voice) < 30:
+            quality["details"]["voice"] = {"status": "warning", "message": "Audio recording too short or missing samples"}
+            deductions += 20
+        else:
+            quality["details"]["voice"] = {"status": "valid", "message": "Valid"}
+            quality["valid_modalities"] += 1
+            
+    if request.spiral is not None:
+        quality["total_modalities"] += 1
+        if request.spiral.get("duration", 1000) < 500:
+            quality["details"]["spiral"] = {"status": "warning", "message": "Drawing completed too quickly"}
+            deductions += 10
+        else:
+            quality["details"]["spiral"] = {"status": "valid", "message": "Valid"}
+            quality["valid_modalities"] += 1
+
+    if request.gait is not None:
+        quality["total_modalities"] += 1
+        if len(request.gait) < 50:
+            quality["details"]["gait"] = {"status": "warning", "message": "Insufficient walking duration"}
+            deductions += 15
+        else:
+            quality["details"]["gait"] = {"status": "valid", "message": "Valid"}
+            quality["valid_modalities"] += 1
+            
+    if request.facial is not None:
+        quality["total_modalities"] += 1
+        if len(request.facial) < 10:
+            quality["details"]["facial"] = {"status": "warning", "message": "Not enough facial frames captured"}
+            deductions += 10
+        else:
+            quality["details"]["facial"] = {"status": "valid", "message": "Valid"}
+            quality["valid_modalities"] += 1
+
+    if request.reaction is not None:
+        quality["total_modalities"] += 1
+        reaction_time = request.reaction[0].get("time", 1000) if request.reaction else 1000
+        if reaction_time < 50:
+            quality["details"]["reaction"] = {"status": "warning", "message": "Invalid reflex response time (too fast)"}
+            deductions += 15
+        else:
+            quality["details"]["reaction"] = {"status": "valid", "message": "Valid"}
+            quality["valid_modalities"] += 1
+
+    if quality["total_modalities"] == 0:
+        quality["overall_score"] = 0
+    else:
+        quality["overall_score"] = max(0, 100 - deductions)
+        
+    return quality
+
 
 @app.post("/api/predict")
 def predict_endpoint(request: PredictRequest, current_user: str = Depends(get_current_user)):
@@ -360,6 +441,12 @@ def predict_endpoint(request: PredictRequest, current_user: str = Depends(get_cu
         
     try:
         result = predict_from_feature_frames(**kwargs)
+        
+        # Evaluate Data Quality
+        data_quality = evaluate_data_quality(request)
+        if "fusion" not in result:
+            result["fusion"] = {}
+        result["fusion"]["data_quality"] = data_quality
         
         # Save to database
         conn = sqlite3.connect(DB_PATH)
@@ -571,20 +658,7 @@ def get_patients():
     cursor.execute('SELECT id, name, age, gender, notes, created_at FROM patients ORDER BY created_at DESC')
     rows = cursor.fetchall()
     
-    # If no patients exist, populate some defaults
-    if not rows:
-        defaults = [
-            ("PT-7829", "John Doe", 65, "Male", "Early stage Parkinson's suspect"),
-            ("PT-4491", "Jane Smith", 72, "Female", "Follow-up for tremor"),
-            ("PT-9932", "Robert Johnson", 58, "Male", "Baseline assessment")
-        ]
-        for d in defaults:
-            cursor.execute('INSERT INTO patients (id, name, age, gender, notes, created_at) VALUES (?, ?, ?, ?, ?, ?)', 
-                          (d[0], d[1], d[2], d[3], d[4], datetime.datetime.now().isoformat()))
-        conn.commit()
-        
-        cursor.execute('SELECT id, name, age, gender, notes, created_at FROM patients ORDER BY created_at DESC')
-        rows = cursor.fetchall()
+    # Note: the database remains empty until a patient is added by the user
         
     conn.close()
     
@@ -627,18 +701,8 @@ def get_patient_history(patient_id: str):
             pass
             
     if not history:
-        import datetime, random
-        base_date = datetime.datetime.now() - datetime.timedelta(days=180)
-        base_score = 0.3
-        for i in range(6):
-            date = base_date + datetime.timedelta(days=30 * i)
-            base_score += random.uniform(-0.05, 0.15)
-            base_score = min(max(base_score, 0.1), 0.9)
-            history.append({
-                "timestamp": date.isoformat(),
-                "score": base_score
-            })
-            
+        pass # No history yet
+
     return {"status": "success", "history": history}
 
 @app.get("/api/patients/{patient_id}/fhir")
@@ -653,8 +717,7 @@ def get_patient_fhir(patient_id: str):
     conn.close()
     
     if not patient_row:
-        # Check if it's a default patient that doesn't exist in the table but is mocked in get_patients
-        patient_row = ("Mock Patient", 60, "unknown")
+        raise HTTPException(status_code=404, detail="Patient not found")
         
     name, age, gender = patient_row
     

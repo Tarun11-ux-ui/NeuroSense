@@ -2236,60 +2236,97 @@ export default function ModuleCapture() {
         )}
 
         {id === "reaction" && (
-          <div style={{ textAlign: "center", padding: "2rem" }}>
+          <div style={{ textAlign: "center", padding: "1rem" }}>
+            <div style={{ marginBottom: "2.5rem", color: "var(--text-muted)", maxWidth: "500px", margin: "0 auto 2.5rem" }}>
+              <h3 style={{ color: "var(--text-main)", marginBottom: "0.5rem", fontSize: "1.4rem" }}>Cognitive Reaction Time Assessment</h3>
+              <p style={{ lineHeight: 1.6 }}>When the screen turns green, click or tap anywhere inside the box as quickly as possible to measure your psychomotor response latency.</p>
+            </div>
             <div
               onClick={handleReactionClick}
               style={{
                 width: "100%",
-                maxWidth: "400px",
-                height: "300px",
+                maxWidth: "650px",
+                height: "380px",
                 margin: "0 auto",
-                borderRadius: "16px",
+                borderRadius: "24px",
                 display: "flex",
+                flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
                 cursor: "pointer",
-                transition: "background 0.1s",
+                transition: "all 0.15s ease-out",
                 background:
                   reactionState === "ready"
-                    ? "var(--danger)" // Red: Wait
+                    ? "#ef4444" 
                     : reactionState === "clicked"
-                      ? "var(--success)" // Green: Click!
+                      ? "#10b981" 
                       : reactionState === "early"
-                        ? "var(--warning)" // Yellow: early
+                        ? "#f59e0b" 
                         : "var(--panel-bg)",
-                border: "2px solid var(--panel-border)",
-                boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+                border: reactionState === "waiting" || reactionState === "done" ? "2px dashed var(--panel-border)" : "none",
+                boxShadow: reactionState === "clicked" ? "0 0 50px rgba(16, 185, 129, 0.4)" : "0 10px 40px rgba(0,0,0,0.06)",
+                userSelect: "none",
+                WebkitUserSelect: "none"
               }}
             >
-              <h2
-                style={{
-                  color: reactionState === "ready" || reactionState === "clicked" ? "white" : "var(--text-main)",
-                  fontSize: "2rem",
-                  pointerEvents: "none",
-                  userSelect: "none"
-                }}
-              >
-                {reactionState === "waiting"
-                  ? "Click Start Test below"
-                  : reactionState === "ready"
-                    ? "Wait for Green..."
-                    : reactionState === "clicked"
-                      ? "CLICK NOW!"
-                      : reactionState === "early"
-                        ? "Too early! Click to try again."
-                        : reactionState === "done"
-                          ? `${reactionTime} ms`
-                          : ""}
-              </h2>
+              {reactionState === "waiting" && (
+                <>
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: "1rem", opacity: 0.8 }}>
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  <h2 style={{ color: "var(--text-main)", fontSize: "1.6rem", pointerEvents: "none", margin: 0 }}>Ready to begin</h2>
+                  <p style={{ color: "var(--text-muted)", marginTop: "0.5rem", pointerEvents: "none" }}>Click "Start Assessment" below</p>
+                </>
+              )}
+              {reactionState === "ready" && (
+                <>
+                  <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: "1rem" }}>
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                  </svg>
+                  <h2 style={{ color: "white", fontSize: "2.8rem", pointerEvents: "none", margin: 0, fontWeight: 700 }}>Wait for Green...</h2>
+                </>
+              )}
+              {reactionState === "clicked" && (
+                <>
+                  <svg width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: "1rem" }}>
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                  </svg>
+                  <h2 style={{ color: "white", fontSize: "4rem", pointerEvents: "none", margin: 0, fontWeight: 800, letterSpacing: "1px" }}>CLICK!</h2>
+                </>
+              )}
+              {reactionState === "early" && (
+                <>
+                  <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: "1rem" }}>
+                    <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                  </svg>
+                  <h2 style={{ color: "white", fontSize: "2.5rem", pointerEvents: "none", margin: 0, fontWeight: 700 }}>Too Early!</h2>
+                  <p style={{ color: "white", marginTop: "0.5rem", pointerEvents: "none", opacity: 0.9, fontSize: "1.1rem" }}>You must wait for the green screen.</p>
+                </>
+              )}
+              {reactionState === "done" && (
+                <>
+                  <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: "1.5rem" }}>
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  </svg>
+                  <h2 style={{ color: "var(--text-main)", fontSize: "4rem", pointerEvents: "none", margin: 0, fontWeight: 700, lineHeight: 1 }}>{reactionTime} <span style={{ fontSize: "1.8rem", color: "var(--text-muted)", fontWeight: 500 }}>ms</span></h2>
+                  <p style={{ color: "var(--text-muted)", marginTop: "1rem", pointerEvents: "none", fontSize: "1.1rem" }}>Reaction latency recorded.</p>
+                </>
+              )}
             </div>
-            <div style={{ marginTop: "2rem" }}>
+            <div style={{ marginTop: "3rem" }}>
               <button
                 className="btn btn-primary"
+                style={{ padding: "0.85rem 2.5rem", fontSize: "1.1rem", borderRadius: "30px", boxShadow: "0 4px 14px 0 rgba(59, 130, 246, 0.39)", fontWeight: 600 }}
                 onClick={startReactionTest}
                 disabled={reactionState === "ready" || reactionState === "clicked"}
               >
-                {reactionState === "done" || reactionState === "early" ? "Test Again" : "Start Test"}
+                {reactionState === "done" || reactionState === "early" ? "Retry Assessment" : "Start Assessment"}
               </button>
             </div>
           </div>

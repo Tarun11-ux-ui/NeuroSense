@@ -526,65 +526,72 @@ export default function Dashboard() {
         </section>
       )}
 
-      {patients.length > 0 && (
-        <section className="tracking-panel">
-          <div className="tracking-header">
-            <div>
-              <span className="section-kicker">Patient monitoring</span>
-              <h2 className="tracking-title">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="var(--primary)"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-                </svg>
-                Longitudinal tracking
-              </h2>
-              <p className="tracking-subtitle">
-                Review screening risk movement across completed assessments.
-              </p>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-              <button 
-                className="btn btn-outline" 
-                style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
-                onClick={() => setShowAddPatient(true)}
+      <section className="tracking-panel">
+        <div className="tracking-header">
+          <div>
+            <span className="section-kicker">Patient monitoring</span>
+            <h2 className="tracking-title">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="var(--primary)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                + New Patient
-              </button>
-              <button 
-                className="btn btn-outline" 
-                style={{ padding: "0.5rem 1rem", fontSize: "0.9rem", borderColor: "var(--primary)", color: "var(--primary)" }}
-                onClick={() => window.open(`/api/patients/${selectedPatient}/fhir`, "_blank")}
-                title="Export latest assessment in FHIR format for EMR integration"
-              >
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: "0.5rem", verticalAlign: "middle" }}>
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
-                </svg>
-                Export EMR (FHIR)
-              </button>
-              <label className="patient-select-wrap">
-                <span>Patient record</span>
-                <select
-                  className="patient-select"
-                  value={selectedPatient}
-                  onChange={(e) => setSelectedPatient(e.target.value)}
-                >
-                  {patients.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name} ({p.id})
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+              </svg>
+              Longitudinal tracking
+            </h2>
+            <p className="tracking-subtitle">
+              Review screening risk movement across completed assessments.
+            </p>
           </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <button 
+              className="btn btn-outline" 
+              style={{ padding: "0 1rem", fontSize: "0.85rem", height: "38px", display: "flex", alignItems: "center", gap: "0.5rem" }}
+              onClick={() => setShowAddPatient(true)}
+            >
+              + New Patient
+            </button>
+            {patients.length > 0 && (
+              <>
+                <button 
+                  className="btn btn-outline" 
+                  style={{ padding: "0 1rem", fontSize: "0.85rem", height: "38px", borderColor: "var(--primary)", color: "var(--primary)", display: "flex", alignItems: "center", gap: "0.5rem" }}
+                  onClick={() => window.open(`/api/patients/${selectedPatient}/fhir`, "_blank")}
+                  title="Export latest assessment in FHIR format for EMR integration"
+                >
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                  </svg>
+                  Export EMR (FHIR)
+                </button>
+                <label className="patient-select-wrap">
+                  <span style={{ fontSize: "0.75rem" }}>Patient record</span>
+                  <select
+                    className="patient-select"
+                    style={{ height: "38px", padding: "0 2rem 0 0.75rem" }}
+                    value={selectedPatient}
+                    onChange={(e) => setSelectedPatient(e.target.value)}
+                  >
+                    {patients.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name} ({p.id})
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </>
+            )}
+          </div>
+        </div>
+
+        {patients.length > 0 ? (
+          <>
 
           <div className="tracking-summary">
             <div className="tracking-patient">
@@ -692,8 +699,23 @@ export default function Dashboard() {
             Screening scores support clinical review and should be interpreted
             alongside patient history and professional assessment.
           </p>
-        </section>
-      )}
+          </>
+        ) : (
+          <div style={{ padding: "4rem 2rem", textAlign: "center", color: "var(--text-muted)", background: "rgba(0,0,0,0.02)", borderRadius: "8px" }}>
+            <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ margin: "0 auto 1rem", opacity: 0.5 }}>
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            <h3 style={{ fontSize: "1.2rem", color: "var(--text-main)", marginBottom: "0.5rem" }}>No Patients Found</h3>
+            <p style={{ marginBottom: "1.5rem" }}>Your clinical database is currently empty. Add a patient to begin tracking.</p>
+            <button className="btn btn-primary" onClick={() => setShowAddPatient(true)}>
+              + Add First Patient
+            </button>
+          </div>
+        )}
+      </section>
 
       <div
         style={{
@@ -716,9 +738,22 @@ export default function Dashboard() {
         </h2>
         <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
           <button
-            className="btn btn-primary"
+            className="btn"
             onClick={() => navigate("/comprehensive")}
-            style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
+            style={{ 
+              padding: "0.6rem 1.2rem", 
+              fontSize: "0.95rem", 
+              display: "flex", 
+              alignItems: "center", 
+              gap: "0.5rem",
+              background: "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
+              boxShadow: "0 4px 14px 0 rgba(139, 92, 246, 0.39)",
+              border: "none",
+              color: "white",
+              borderRadius: "8px",
+              fontWeight: 500,
+              cursor: "pointer"
+            }}
           >
             <svg
               viewBox="0 0 24 24"
@@ -734,7 +769,20 @@ export default function Dashboard() {
             </svg>
             Comprehensive Assessment
           </button>
-          <span className="badge badge-active" style={{ fontSize: "0.8rem" }}>
+          <span 
+            className="badge badge-active" 
+            style={{ 
+              fontSize: "0.8rem", 
+              padding: "0.3rem 0.8rem", 
+              backgroundColor: "rgba(16, 185, 129, 0.1)", 
+              color: "#10b981", 
+              border: "1px solid rgba(16, 185, 129, 0.2)",
+              borderRadius: "20px",
+              fontWeight: 600,
+              letterSpacing: "0.5px",
+              textTransform: "uppercase"
+            }}
+          >
             System Ready
           </span>
         </div>

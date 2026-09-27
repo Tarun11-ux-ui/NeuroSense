@@ -1533,6 +1533,24 @@ export default function ComprehensiveAssessment() {
 
         return (
           <div className="fade-in">
+            {/* PRINT HEADER */}
+            <div className="print-only" style={{ marginBottom: "2rem", borderBottom: "2px solid #333", paddingBottom: "1rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                <div>
+                  <h1 style={{ fontSize: "24pt", margin: "0 0 0.5rem 0", color: "#111" }}>NeuroSense Motor Assessment Report</h1>
+                  <p style={{ margin: 0, color: "#555", fontSize: "11pt" }}>Comprehensive Multimodal Neurological Screening</p>
+                </div>
+                <div style={{ textAlign: "right", fontSize: "10pt", color: "#666" }}>
+                  <strong>CONFIDENTIAL MEDICAL RECORD</strong>
+                </div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem", marginTop: "1.5rem", background: "#f8fafc", padding: "1rem", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
+                <div><strong style={{ color: "#334155" }}>Patient ID:</strong> <span style={{ color: "#0f172a" }}>{patientId || "Anonymous"}</span></div>
+                <div><strong style={{ color: "#334155" }}>Assessment Date:</strong> <span style={{ color: "#0f172a" }}>{new Date().toLocaleDateString()}</span></div>
+                <div><strong style={{ color: "#334155" }}>Session ID:</strong> <span style={{ color: "#0f172a", fontFamily: "monospace" }}>NS-{new Date().getFullYear()}-{(new Date().getMonth()+1).toString().padStart(2, '0')}{new Date().getDate().toString().padStart(2, '0')}-{Math.floor(Math.random() * 1000).toString().padStart(3, '0')}</span></div>
+              </div>
+            </div>
+
             <div className="report-card fade-in" style={{ marginTop: 0 }}>
               <div className="report-header">
                 <div className="report-title">
@@ -1673,6 +1691,52 @@ export default function ComprehensiveAssessment() {
               )}
 
               <div className="report-body">
+                {fusion.data_quality && (
+                  <div style={{
+                    background: "var(--panel-bg)",
+                    padding: "1.5rem",
+                    borderRadius: "12px",
+                    border: "1px solid var(--panel-border)",
+                    marginBottom: "1.5rem"
+                  }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+                      <div style={{ color: "var(--text-main)", display: "flex", alignItems: "center", gap: "0.75rem", fontSize: "1.15rem", fontWeight: 600 }}>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2">
+                          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        Assessment Data Quality
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        <div style={{ width: "100px", height: "8px", background: "rgba(0,0,0,0.1)", borderRadius: "4px", overflow: "hidden" }}>
+                          <div style={{ height: "100%", width: `${fusion.data_quality.overall_score}%`, background: fusion.data_quality.overall_score >= 80 ? "var(--success)" : fusion.data_quality.overall_score >= 50 ? "var(--warning)" : "var(--danger)" }}></div>
+                        </div>
+                        <strong style={{ fontSize: "1.1rem" }}>{fusion.data_quality.overall_score}%</strong>
+                      </div>
+                    </div>
+                    
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                      {Object.keys(fusion.data_quality.details).map((mod) => {
+                        const info = fusion.data_quality.details[mod];
+                        const isValid = info.status === "valid";
+                        return (
+                          <div key={mod} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.75rem", background: "rgba(255,255,255,0.5)", borderRadius: "8px", border: "1px solid rgba(0,0,0,0.05)" }}>
+                            <span style={{ textTransform: "capitalize", fontWeight: 500 }}>{mod}</span>
+                            <span style={{ 
+                              display: "flex", 
+                              alignItems: "center", 
+                              gap: "0.5rem", 
+                              color: isValid ? "var(--success)" : "var(--warning)",
+                              fontSize: "0.9rem"
+                            }}>
+                              {isValid ? "✓ Valid" : `⚠ ${info.message}`}
+                            </span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
                 <div className="report-grid">
                   <div className="metric-box">
                     <div className="metric-label">
@@ -1958,6 +2022,13 @@ export default function ComprehensiveAssessment() {
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* PRINT FOOTER */}
+            <div className="print-only" style={{ marginTop: "3rem", paddingTop: "1rem", borderTop: "1px solid #ccc", fontSize: "9pt", color: "#666", textAlign: "justify" }}>
+              <strong>Clinical Disclaimer:</strong> NeuroSense is an experimental research tool and is not FDA-approved or intended to be a substitute for professional medical advice, diagnosis, or treatment. The findings in this report reflect algorithmic pattern matching against behavioral baseline data. A qualified neurologist or physician must review these outputs in the context of comprehensive clinical observation. 
+              <br/><br/>
+              <em>Generated by NeuroSense v1.0.0 on {new Date().toLocaleString()}</em>
             </div>
 
             <div style={{ marginTop: "2rem", textAlign: "center", display: "flex", gap: "1rem", justifyContent: "center" }}>
