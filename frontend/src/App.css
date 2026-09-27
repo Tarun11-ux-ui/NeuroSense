@@ -1,21 +1,22 @@
 :root {
-  --bg-main: #f8fafc;
-  --panel-bg: rgba(255, 255, 255, 0.85);
-  --panel-border: rgba(15, 23, 42, 0.04);
-  --panel-border-hover: rgba(139, 92, 246, 0.3);
+  --bg-main: #f4f7fc;
+  --panel-bg: rgba(255, 255, 255, 0.55);
+  --panel-border: rgba(255, 255, 255, 0.7);
+  --panel-border-hover: rgba(139, 92, 246, 0.6);
   --text-main: #0f172a;
   --text-muted: #64748b;
   --primary: #8b5cf6;
   --primary-hover: #7c3aed;
-  --accent: #d946ef;
+  --accent: #ec4899;
   --success: #10b981;
   --warning: #f59e0b;
   --danger: #ef4444;
   --radius-lg: 24px;
   --radius-md: 16px;
   --radius-sm: 8px;
-  --shadow-glow: 0 15px 35px -5px rgba(139, 92, 246, 0.25);
-  --shadow-soft: 0 8px 20px -4px rgba(15, 23, 42, 0.05);
+  --shadow-glow: 0 20px 40px -5px rgba(139, 92, 246, 0.35);
+  --shadow-soft: 0 10px 30px -5px rgba(15, 23, 42, 0.08);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
 }
 
 * {
@@ -29,19 +30,19 @@ body {
   background-color: var(--bg-main);
   background-image:
     radial-gradient(
-      circle at 10% 10%,
-      rgba(139, 92, 246, 0.12) 0%,
-      transparent 40%
+      circle at 15% 50%,
+      rgba(139, 92, 246, 0.2) 0%,
+      transparent 50%
     ),
     radial-gradient(
-      circle at 90% 90%,
-      rgba(217, 70, 239, 0.12) 0%,
-      transparent 40%
+      circle at 85% 30%,
+      rgba(236, 72, 153, 0.2) 0%,
+      transparent 50%
     ),
     radial-gradient(
-      circle at 50% 50%,
-      rgba(59, 130, 246, 0.05) 0%,
-      transparent 60%
+      circle at 50% 80%,
+      rgba(59, 130, 246, 0.15) 0%,
+      transparent 50%
     );
   background-attachment: fixed;
   color: var(--text-main);
@@ -182,14 +183,17 @@ h1, h2, h3, h4, h5, h6 {
 
 .btn-primary {
   background: linear-gradient(135deg, var(--primary), var(--accent));
+  background-size: 200% auto;
   color: white;
-  box-shadow: 0 4px 14px 0 rgba(139, 92, 246, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 15px 0 rgba(139, 92, 246, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .btn-primary:hover {
+  background-position: right center;
   transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+  box-shadow: 0 8px 25px rgba(236, 72, 153, 0.5);
 }
 
 .btn-outline {
@@ -219,11 +223,11 @@ h1, h2, h3, h4, h5, h6 {
   flex-direction: column;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-soft);
+  box-shadow: var(--glass-shadow);
 }
 
 .module-card::before {
@@ -677,11 +681,18 @@ pre.code-block {
 /* Patient longitudinal tracking */
 .tracking-panel {
   margin: 0 0 3.5rem;
-  background: rgba(255, 255, 255, 0.82);
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
   border-radius: 20px;
   padding: 1.75rem;
-  box-shadow: 0 16px 35px -24px rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: var(--glass-shadow);
+  transition: box-shadow 0.3s ease;
+}
+
+.tracking-panel:hover {
+  box-shadow: 0 16px 40px -15px rgba(15, 23, 42, 0.15);
 }
 
 .tracking-header {
