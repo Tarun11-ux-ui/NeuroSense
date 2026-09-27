@@ -693,9 +693,30 @@ def get_patient_history(patient_id: str):
         try:
             res = json.loads(r[2])
             fused_score = res.get("fusion", {}).get("fused_risk_score", r[1])
+            
+            # Extract basic modality data to enable baseline comparison
+            mod_data = {}
+            for mod_name, mod_val in res.get("modalities", {}).items():
+                if isinstance(mod_val, dict):
+                    # Try to extract a score or prediction value if available
+                    val = mod_val.get("score", mod_val.get("probability", mod_val.get("prediction", 0)))
+                    # Try to extract a numeric value if possible
+                    if isinstance(val, (int, float)):
+                        mod_data[mod_name] = float(val)
+                    elif isinstance(val, str) and val.replace('.','',1).isdigit():
+                        mod_data[mod_name] = float(val)
+                    else:
+                        # Fallback for string classes or labels (e.g., "Normal" -> 0, "Abnormal" -> 1)
+                        if str(val).lower() in ["normal", "healthy", "low"]: mod_data[mod_name] = 0.0
+                        elif str(val).lower() in ["abnormal", "high"]: mod_data[mod_name] = 1.0
+                        else: mod_data[mod_name] = 0.5
+                elif isinstance(mod_val, (int, float)):
+                    mod_data[mod_name] = float(mod_val)
+                    
             history.append({
                 "timestamp": r[0],
-                "score": fused_score
+                "score": fused_score,
+                "modalities": mod_data
             })
         except:
             pass

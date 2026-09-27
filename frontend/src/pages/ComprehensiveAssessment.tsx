@@ -36,11 +36,30 @@ export default function ComprehensiveAssessment() {
   );
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
-  const [patientId, setPatientId] = useState<string>("");
+  const [patientId, setPatientId] = useState<string>(() => localStorage.getItem("neurosense_patient_id") || "");
   const [medicationState, setMedicationState] = useState<"ON" | "OFF" | "UNKNOWN">("UNKNOWN");
+  const [baselineData, setBaselineData] = useState<any>(null);
 
   const [tasks, setTasks] = useState<string[]>([]);
   const [isVerified, setIsVerified] = useState(false);
+
+  useEffect(() => {
+    if (step === 6 && patientId) {
+      fetch(`/api/patients/${encodeURIComponent(patientId)}/history`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === "success" && data.history && data.history.length > 1) {
+            // Sort history ascending by timestamp just in case
+            const sorted = [...data.history].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+            // The last item is likely the current session we just submitted.
+            // The second to last item is the previous baseline.
+            const previousSession = sorted[sorted.length - 2];
+            setBaselineData(previousSession);
+          }
+        })
+        .catch(console.error);
+    }
+  }, [step, patientId]);
 
   useEffect(() => {
     const modules = [
@@ -432,8 +451,8 @@ export default function ComprehensiveAssessment() {
     }
   };
 
-  const goToNextStep = (nextStep: number) => {
-    if (!isVerified) {
+  const goToNextStep = (nextStep: number, skip: boolean = false) => {
+    if (!skip && !isVerified) {
       setError("Please confirm task verification before proceeding.");
       return;
     }
@@ -442,8 +461,8 @@ export default function ComprehensiveAssessment() {
     setStep(nextStep);
   };
 
-  const runAnalysis = async () => {
-    if (!isVerified) {
+  const runAnalysis = async (skip: boolean = false) => {
+    if (!skip && !isVerified) {
       setError("Please confirm task verification before proceeding.");
       return;
     }
@@ -590,8 +609,16 @@ export default function ComprehensiveAssessment() {
                 marginTop: "1.5rem",
                 display: "flex",
                 justifyContent: "flex-end",
+                gap: "1rem"
               }}
             >
+              <button
+                className="btn btn-outline"
+                onClick={() => goToNextStep(1, true)}
+                style={{ color: "var(--text-muted)", borderColor: "var(--panel-border)" }}
+              >
+                Skip Test
+              </button>
               <button
                 id="next-step-btn"
                 className="btn btn-primary"
@@ -711,13 +738,22 @@ export default function ComprehensiveAssessment() {
               >
                 Back
               </button>
-              <button
-                id="next-step-btn"
-                className="btn btn-primary"
-                onClick={() => goToNextStep(2)}
-              >
-                Next: Mouse Balabit
-              </button>
+              <div style={{ display: "flex", gap: "1rem" }}>
+                <button
+                  className="btn btn-outline"
+                  onClick={() => goToNextStep(2, true)}
+                  style={{ color: "var(--text-muted)", borderColor: "var(--panel-border)" }}
+                >
+                  Skip Test
+                </button>
+                <button
+                  id="next-step-btn"
+                  className="btn btn-primary"
+                  onClick={() => goToNextStep(2)}
+                >
+                  Next: Mouse Balabit
+                </button>
+              </div>
             </div>
           </div>
         );
@@ -830,13 +866,22 @@ export default function ComprehensiveAssessment() {
               >
                 Back
               </button>
-              <button
-                id="next-step-btn"
-                className="btn btn-primary"
-                onClick={() => goToNextStep(3)}
-              >
-                Next: Voice Telemetry
-              </button>
+              <div style={{ display: "flex", gap: "1rem" }}>
+                <button
+                  className="btn btn-outline"
+                  onClick={() => goToNextStep(3, true)}
+                  style={{ color: "var(--text-muted)", borderColor: "var(--panel-border)" }}
+                >
+                  Skip Test
+                </button>
+                <button
+                  id="next-step-btn"
+                  className="btn btn-primary"
+                  onClick={() => goToNextStep(3)}
+                >
+                  Next: Voice Telemetry
+                </button>
+              </div>
             </div>
           </div>
         );
@@ -1037,13 +1082,22 @@ export default function ComprehensiveAssessment() {
               >
                 Back
               </button>
-              <button
-                id="next-step-btn"
-                className="btn btn-primary"
-                onClick={() => goToNextStep(4)}
-              >
-                Next: Gait Telemetry
-              </button>
+              <div style={{ display: "flex", gap: "1rem" }}>
+                <button
+                  className="btn btn-outline"
+                  onClick={() => goToNextStep(4, true)}
+                  style={{ color: "var(--text-muted)", borderColor: "var(--panel-border)" }}
+                >
+                  Skip Test
+                </button>
+                <button
+                  id="next-step-btn"
+                  className="btn btn-primary"
+                  onClick={() => goToNextStep(4)}
+                >
+                  Next: Gait Telemetry
+                </button>
+              </div>
             </div>
           </div>
         );
@@ -1311,13 +1365,22 @@ export default function ComprehensiveAssessment() {
               >
                 Back
               </button>
-              <button
-                id="next-step-btn"
-                className="btn btn-primary"
-                onClick={() => goToNextStep(5)}
-              >
-                Next: Spiral Tracing
-              </button>
+              <div style={{ display: "flex", gap: "1rem" }}>
+                <button
+                  className="btn btn-outline"
+                  onClick={() => goToNextStep(5, true)}
+                  style={{ color: "var(--text-muted)", borderColor: "var(--panel-border)" }}
+                >
+                  Skip Test
+                </button>
+                <button
+                  id="next-step-btn"
+                  className="btn btn-primary"
+                  onClick={() => goToNextStep(5)}
+                >
+                  Next: Spiral Tracing
+                </button>
+              </div>
             </div>
           </div>
         );
@@ -1469,18 +1532,27 @@ export default function ComprehensiveAssessment() {
               >
                 Back
               </button>
-              <button
-                id="next-step-btn"
-                className="btn btn-primary"
-                onClick={runAnalysis}
-                disabled={isAnalyzing}
-                style={{
-                  background: "linear-gradient(135deg, #10b981, #059669)",
-                  boxShadow: "0 4px 14px 0 rgba(16,185,129,0.3)",
-                  minWidth: "250px",
-                }}
-              >
-                {isAnalyzing ? (
+              <div style={{ display: "flex", gap: "1rem" }}>
+                <button
+                  className="btn btn-outline"
+                  onClick={() => runAnalysis(true)}
+                  disabled={isAnalyzing}
+                  style={{ color: "var(--text-muted)", borderColor: "var(--panel-border)" }}
+                >
+                  Skip Test
+                </button>
+                <button
+                  id="next-step-btn"
+                  className="btn btn-primary"
+                  onClick={() => runAnalysis()}
+                  disabled={isAnalyzing}
+                  style={{
+                    background: "linear-gradient(135deg, #10b981, #059669)",
+                    boxShadow: "0 4px 14px 0 rgba(16,185,129,0.3)",
+                    minWidth: "250px",
+                  }}
+                >
+                  {isAnalyzing ? (
                   <span
                     style={{
                       display: "flex",
@@ -1514,6 +1586,7 @@ export default function ComprehensiveAssessment() {
                   "Run Global Multimodal Analysis"
                 )}
               </button>
+              </div>
             </div>
           </div>
         );
@@ -1737,6 +1810,128 @@ export default function ComprehensiveAssessment() {
                     </div>
                   </div>
                 )}
+
+                {baselineData && (
+                  <div style={{
+                    background: "var(--panel-bg)",
+                    padding: "1.5rem",
+                    borderRadius: "12px",
+                    border: "1px solid var(--panel-border)",
+                    marginBottom: "1.5rem"
+                  }}>
+                    <div style={{ color: "var(--text-main)", display: "flex", alignItems: "center", gap: "0.75rem", fontSize: "1.15rem", fontWeight: 600, marginBottom: "1rem" }}>
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                      </svg>
+                      Personalized Motor Baseline
+                    </div>
+                    
+                    <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr 1fr", gap: "1rem", borderBottom: "1px solid var(--panel-border)", paddingBottom: "0.5rem", marginBottom: "0.5rem", fontSize: "0.85rem", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase" }}>
+                      <div>Modality</div>
+                      <div>Baseline</div>
+                      <div>Current</div>
+                      <div>Change</div>
+                    </div>
+                    
+                    {Object.keys(result.modalities).map(mod => {
+                       const currentVal = result.modalities[mod].score ?? result.modalities[mod].prediction;
+                       let currScore = 0;
+                       if (typeof currentVal === "number") currScore = currentVal > 1 ? currentVal : currentVal * 100;
+                       else if (typeof currentVal === "string" && !isNaN(Number(currentVal))) currScore = Number(currentVal);
+                       else if (typeof currentVal === "string") currScore = currentVal.toLowerCase() === "abnormal" ? 100 : 0;
+                       
+                       let baseScore = baselineData.modalities?.[mod] !== undefined ? baselineData.modalities[mod] : null;
+                       if (baseScore !== null && baseScore <= 1) baseScore *= 100;
+                       
+                       const diff = baseScore !== null ? currScore - baseScore : null;
+                       
+                       // A negative difference means the score went down (less risk = good in this context, or maybe score is performance?)
+                       // If score is risk, diff > 0 is bad (danger), diff < 0 is good (success).
+                       // Let's assume higher score = higher risk for most modalities.
+                       const diffColor = diff === null ? "inherit" : (diff > 0 ? "var(--danger)" : "var(--success)");
+                       const diffArrow = diff !== null ? (diff > 0 ? "↑" : (diff < 0 ? "↓" : "")) : "";
+                       
+                       return (
+                         <div key={mod} style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr 1fr", gap: "1rem", padding: "0.75rem 0", borderBottom: "1px solid rgba(0,0,0,0.05)", alignItems: "center" }}>
+                           <div style={{ textTransform: "capitalize", fontWeight: 500 }}>{mod}</div>
+                           <div style={{ fontFamily: "monospace", fontSize: "1.05rem" }}>{baseScore !== null ? baseScore.toFixed(1) : "--"}</div>
+                           <div style={{ fontFamily: "monospace", fontSize: "1.05rem" }}>{currScore.toFixed(1)}</div>
+                           <div style={{ fontFamily: "monospace", fontSize: "1.05rem", color: diffColor, fontWeight: 600 }}>
+                             {diff !== null ? `${diffArrow} ${Math.abs(diff).toFixed(1)}%` : "--"}
+                           </div>
+                         </div>
+                       )
+                    })}
+                  </div>
+                )}
+                
+                {fusion.available_modalities && fusion.available_modalities.length > 1 && fusion.modality_scores && (
+                  <div style={{
+                    background: "var(--panel-bg)",
+                    padding: "1.5rem",
+                    borderRadius: "12px",
+                    border: "1px solid var(--panel-border)",
+                    marginBottom: "1.5rem"
+                  }}>
+                    <div style={{ color: "var(--text-main)", display: "flex", alignItems: "center", gap: "0.75rem", fontSize: "1.15rem", fontWeight: 600, marginBottom: "1rem" }}>
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="3" y1="9" x2="21" y2="9"></line>
+                        <line x1="9" y1="21" x2="9" y2="9"></line>
+                      </svg>
+                      Multimodal Consistency Matrix
+                    </div>
+                    <div style={{ overflowX: "auto" }}>
+                      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.9rem" }}>
+                        <thead>
+                          <tr>
+                            <th style={{ padding: "0.5rem", border: "1px solid var(--panel-border)", background: "rgba(0,0,0,0.02)" }}></th>
+                            {fusion.available_modalities.map((mod: string) => (
+                              <th key={mod} style={{ padding: "0.5rem", border: "1px solid var(--panel-border)", textTransform: "capitalize", fontWeight: 600, background: "rgba(0,0,0,0.02)" }}>
+                                {mod}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {fusion.available_modalities.map((rowMod: string) => (
+                            <tr key={rowMod}>
+                              <th style={{ padding: "0.5rem", border: "1px solid var(--panel-border)", textTransform: "capitalize", fontWeight: 600, textAlign: "left", background: "rgba(0,0,0,0.02)" }}>
+                                {rowMod}
+                              </th>
+                              {fusion.available_modalities.map((colMod: string) => {
+                                if (rowMod === colMod) {
+                                  return <td key={colMod} style={{ padding: "0.5rem", border: "1px solid var(--panel-border)", background: "rgba(0,0,0,0.05)", textAlign: "center" }}>-</td>;
+                                }
+                                const rowScore = fusion.modality_scores[rowMod];
+                                const colScore = fusion.modality_scores[colMod];
+                                const diff = Math.abs(rowScore - colScore);
+                                let agreementLevel = "High";
+                                let bgColor = "rgba(16, 185, 129, 0.15)";
+                                let textColor = "var(--success)";
+                                if (diff > 0.4) {
+                                  agreementLevel = "Low";
+                                  bgColor = "rgba(239, 68, 68, 0.15)";
+                                  textColor = "var(--danger)";
+                                } else if (diff > 0.2) {
+                                  agreementLevel = "Moderate";
+                                  bgColor = "rgba(245, 158, 11, 0.15)";
+                                  textColor = "var(--warning)";
+                                }
+                                return (
+                                  <td key={colMod} style={{ padding: "0.5rem", border: "1px solid var(--panel-border)", background: bgColor, color: textColor, textAlign: "center", fontWeight: 600 }}>
+                                    {agreementLevel}
+                                  </td>
+                                );
+                              })}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+                
                 <div className="report-grid">
                   <div className="metric-box">
                     <div className="metric-label">
