@@ -380,61 +380,26 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="page-header" style={{ marginBottom: "2.5rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end", textAlign: "left" }}>
+      <div className="page-header dashboard-header">
         <div>
-          <h1
-            style={{
-              fontSize: "2.5rem",
-              marginBottom: "0.5rem",
-              background:
-                "linear-gradient(90deg, var(--primary) 0%, #3b82f6 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
+          <h1 className="dashboard-title">
             NeuroSense Dashboard
           </h1>
-          <p style={{ fontSize: "1.15rem", color: "var(--text-muted)", margin: 0 }}>
+          <p className="dashboard-subtitle">
             Clinical Intelligence & Remote Patient Monitoring Platform
           </p>
         </div>
-        <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-          <span 
-            className="badge badge-active" 
-            style={{ 
-              fontSize: "0.8rem", 
-              padding: "0.4rem 1rem", 
-              backgroundColor: "rgba(16, 185, 129, 0.1)", 
-              color: "#10b981", 
-              border: "1px solid rgba(16, 185, 129, 0.2)",
-              borderRadius: "20px",
-              fontWeight: 600,
-              letterSpacing: "0.5px",
-              textTransform: "uppercase"
-            }}
-          >
+        <div className="dashboard-actions">
+          <span className="badge badge-active system-badge">
             System Ready
           </span>
           <button
-            className="btn"
+            className="btn btn-primary"
             onClick={() => navigate("/comprehensive")}
             style={{ 
               padding: "0.8rem 1.5rem", 
-              fontSize: "1rem", 
-              display: "flex", 
-              alignItems: "center", 
-              gap: "0.5rem",
-              background: "linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%)",
-              boxShadow: "0 8px 20px -4px rgba(139, 92, 246, 0.4)",
-              border: "none",
-              color: "white",
-              borderRadius: "12px",
-              fontWeight: 600,
-              cursor: "pointer",
-              transition: "transform 0.2s ease, box-shadow 0.2s ease"
+              fontSize: "1rem"
             }}
-            onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-            onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
           >
             <svg
               viewBox="0 0 24 24"
@@ -559,7 +524,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))", gap: "1.5rem", marginBottom: "3.5rem" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 350px), 1fr))", gap: "1.5rem", marginBottom: "3.5rem" }}>
         <section className="tracking-panel" style={{ margin: 0, height: "100%", gridColumn: "span 2" }}>
           <div className="tracking-header">
             <div>
@@ -583,10 +548,10 @@ export default function Dashboard() {
                 Review screening risk movement across completed assessments.
               </p>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap", justifyContent: "flex-end" }}>
+            <div className="tracking-controls">
               <button 
                 className="btn btn-outline" 
-                style={{ padding: "0 1rem", fontSize: "0.85rem", height: "38px", display: "flex", alignItems: "center", gap: "0.5rem" }}
+                style={{ padding: "0 1rem", fontSize: "0.85rem", height: "38px" }}
                 onClick={() => setShowAddPatient(true)}
               >
                 + New Patient
@@ -595,7 +560,7 @@ export default function Dashboard() {
                 <>
                   <button 
                     className="btn btn-outline" 
-                    style={{ padding: "0 1rem", fontSize: "0.85rem", height: "38px", borderColor: "var(--primary)", color: "var(--primary)", display: "flex", alignItems: "center", gap: "0.5rem" }}
+                    style={{ padding: "0 1rem", fontSize: "0.85rem", height: "38px", borderColor: "var(--primary)", color: "var(--primary)" }}
                     onClick={() => window.open(`/api/patients/${selectedPatient}/fhir`, "_blank")}
                     title="Export latest assessment in FHIR format for EMR integration"
                   >
