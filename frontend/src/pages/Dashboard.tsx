@@ -1,799 +1,211 @@
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  Radar,
+  Legend,
   ResponsiveContainer,
 } from "recharts";
-import { QRCodeSVG } from "qrcode.react";
 
 export const MODULES = [
-  {
-    id: "keystroke",
-    name: "Keystroke Dynamics",
-    icon: <path d="M3 3h18v18H3zM8 12h8M12 8v8" />,
-    desc: "Analyze typing rhythm and hold times.",
-    longDesc:
-      "Keystroke Dynamics utilizes high-frequency temporal data to assess motor control and cognitive-motor integration. By analyzing flight time, dwell time, and intra-key latencies, this module can detect micro-tremors, hesitation patterns, and fatigue markers that are indicative of early-onset neurodegenerative conditions or acute cognitive load.",
+  { 
+    id: "keystroke", 
+    name: "Typing", 
+    icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="6" y1="8" x2="6.01" y2="8"></line><line x1="10" y1="8" x2="10.01" y2="8"></line><line x1="14" y1="8" x2="14.01" y2="8"></line><line x1="18" y1="8" x2="18.01" y2="8"></line><line x1="6" y1="12" x2="6.01" y2="12"></line><line x1="10" y1="12" x2="10.01" y2="12"></line><line x1="14" y1="12" x2="14.01" y2="12"></line><line x1="18" y1="12" x2="18.01" y2="12"></line><line x1="8" y1="16" x2="16" y2="16"></line></svg>, 
+    longDesc: "Analyze keystroke dynamics, typing rhythm, and flight times to detect early signs of motor impairment." 
   },
-  {
-    id: "mouse_dfl",
-    name: "Mouse DFL",
-    icon: (
-      <>
-        <circle cx="12" cy="12" r="10" />
-        <path d="M12 2v20M2 12h20" />
-      </>
-    ),
-    desc: "Analyze cursor movement trajectories.",
-    longDesc:
-      "The Mouse DFL (Dynamic Feature Learning) module continuously monitors cursor trajectory, velocity, acceleration, and jerk. It employs advanced kinematic modeling to distinguish between intentional smooth movements and atypical, jagged corrections that often correlate with fine motor skill degradation.",
+  { 
+    id: "mouse_dfl", 
+    name: "Mouse", 
+    icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>, 
+    longDesc: "Evaluate cursor kinematics and fine motor control." 
   },
-  {
-    id: "mouse_balabit",
-    name: "Mouse Balabit",
-    icon: (
-      <>
-        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-        <path d="M12 3v18M3 12h18" />
-      </>
-    ),
-    desc: "Analyze point-and-click behaviors.",
-    longDesc:
-      "Mouse Balabit focuses on point-and-click target acquisition. By evaluating Fitts's Law compliance, click latency, and target overshoot ratios, this module provides precise, quantifiable metrics on hand-eye coordination and spatial targeting accuracy.",
+  { 
+    id: "spiral", 
+    name: "Spiral", 
+    icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 100-16 8 8 0 000 16z"></path><path d="M12 18a6 6 0 110-12 6 6 0 010 12zm0-2a4 4 0 100-8 4 4 0 000 8z"></path></svg>, 
+    longDesc: "Analyze hand tremors and fine motor coordination through spiral drawing tasks." 
   },
-  {
-    id: "voice",
-    name: "Voice Analysis",
-    icon: (
-      <>
-        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z" />
-        <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8" />
-      </>
-    ),
-    desc: "Vocal biomarker feature extraction.",
-    longDesc:
-      "Voice Analysis extracts multidimensional acoustic parameters—including fundamental frequency (F0), jitter, shimmer, and Mel-frequency cepstral coefficients (MFCCs). These vocal biomarkers are critical for detecting phonatory instability, dysarthria, and sub-clinical changes in vocal fold tension.",
+  { 
+    id: "voice", 
+    name: "Voice", 
+    icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>, 
+    longDesc: "Assess phonation, articulation, and voice stability for speech motor symptoms." 
   },
-  {
-    id: "gait",
-    name: "Gait Analysis",
-    icon: (
-      <>
-        <path d="M13 4v16M9 4v16M5 12h14" />
-      </>
-    ),
-    desc: "Accelerometer and gyroscope patterns.",
-    longDesc:
-      "Gait Analysis leverages tri-axial accelerometer and gyroscope telemetry to reconstruct biomechanical movement patterns in 3D space. It calculates stride length, step variability, cadence, and postural sway to flag balance anomalies and assess fall risk.",
-  },
-  {
-    id: "spiral",
-    name: "Spiral Drawing",
-    icon: (
-      <>
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
-        <path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z" />
-      </>
-    ),
-    desc: "Motor control during drawing tasks.",
-    longDesc:
-      "Spiral Drawing is a digitized clinical assessment for evaluating fine motor tremor and dyskinesia. By tracing continuous parametric spirals, the system analyzes radial error, drawing velocity variance, and pen pressure (if available) to quantify involuntary oscillations.",
-  },
-  {
-    id: "facial",
-    name: "Facial Expression",
-    icon: (
-      <>
-        <circle cx="12" cy="12" r="10"></circle>
-        <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
-        <line x1="9" y1="9" x2="9.01" y2="9"></line>
-        <line x1="15" y1="9" x2="15.01" y2="9"></line>
-      </>
-    ),
-    desc: "Masked facies & eye blink tracking.",
-    longDesc:
-      "Facial Expression uses MediaPipe Face Mesh to analyze micro-expressions, assessing 'Masked Facies' (hypomimia) commonly seen in Parkinson's. It tracks Eye Aspect Ratio (EAR) for blink rate and measures standard deviations in facial landmarks to quantify muscle rigidity and reduced facial animation.",
-  },
-  {
-    id: "reaction",
-    name: "Cognitive Reaction Time",
-    icon: (
-      <>
-        <circle cx="12" cy="12" r="10"></circle>
-        <polyline points="12 6 12 12 16 14"></polyline>
-      </>
-    ),
-    desc: "Assess visual-motor reaction latency.",
-    longDesc:
-      "The Cognitive Reaction Time module measures visual-motor response latency. By randomizing stimuli presentation, it calculates simple reaction time and anticipatory errors (premature clicks). Elevated or highly variable reaction times can indicate cognitive slowing, bradyphrenia, or dopaminergic deficits.",
-  },
+  { 
+    id: "gait", 
+    name: "Gait", 
+    icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 16v-2.38C4 11.5 5.28 10 7 10h1a2 2 0 0 0 2-2V6a2 2 0 0 1 2-2h1.33c1.72 0 3.23 1.09 3.82 2.7l1.55 4.14"></path><path d="M13 14l-2 3"></path><path d="M16 16l2-3"></path></svg>, 
+    longDesc: "Evaluate balance, stride length, and walking rhythm using video pose estimation." 
+  }
 ];
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [stats, setStats] = useState({
-    active_pipelines: 6,
-    model_confidence: 94.8,
-    analyzed_sessions: 1248,
-  });
 
-  const [patients, setPatients] = useState<any[]>([]);
-  const [selectedPatient, setSelectedPatient] = useState<string>("");
-  const [showAddPatient, setShowAddPatient] = useState(false);
-  const [newPatient, setNewPatient] = useState({ name: "", age: "", gender: "Male", notes: "" });
-  const [patientHistory, setPatientHistory] = useState<any[]>([]);
-
-  const [showConsent, setShowConsent] = useState(false);
-  const [companionUrl, setCompanionUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Magic Login logic for mobile
-    fetch("/api/config")
-      .then(res => res.json())
-      .then(config => {
-        const token = localStorage.getItem("neurosense_token") || "";
-        setCompanionUrl(`http://${config.local_ip}:5173/auto-login?token=${token}`);
-      })
-      .catch(err => console.error("Failed to load local IP", err));
-    
-    const hasConsented = localStorage.getItem("clinical_consent");
-    if (!hasConsented) {
-      setShowConsent(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetch("/api/stats")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status === "success") {
-          setStats({
-            active_pipelines: data.active_pipelines,
-            model_confidence: data.model_confidence,
-            analyzed_sessions: data.analyzed_sessions,
-          });
-        }
-      })
-      .catch((err) => console.error("Failed to load stats:", err));
-
-    fetch("/api/patients")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status === "success") {
-          setPatients(data.patients);
-          if (data.patients.length > 0) {
-            setSelectedPatient(data.patients[0].id);
-          }
-        }
-      })
-      .catch((err) => console.error("Failed to load patients:", err));
-  }, []);
-
-  useEffect(() => {
-    if (!selectedPatient) return;
-    fetch(`/api/patients/${encodeURIComponent(selectedPatient)}/history`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status === "success") {
-          // Format date for chart
-          const formatted = data.history.map((h: any) => {
-            const date = new Date(h.timestamp);
-            return {
-              date: `${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${date.getMinutes().toString().padStart(2, "0")}`,
-              score: Number((h.score * 100).toFixed(1)),
-            };
-          });
-          setPatientHistory(formatted);
-        }
-      })
-      .catch((err) => console.error("Failed to load patient history:", err));
-      
-    // Save patient ID for subsequent captures
-    localStorage.setItem("neurosense_patient_id", selectedPatient);
-  }, [selectedPatient]);
-
-  const handleAddPatient = (e: React.FormEvent) => {
-    e.preventDefault();
-    fetch("/api/patients", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: newPatient.name,
-        age: parseInt(newPatient.age) || 0,
-        gender: newPatient.gender,
-        notes: newPatient.notes
-      })
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.status === "success") {
-          setShowAddPatient(false);
-          setNewPatient({ name: "", age: "", gender: "Male", notes: "" });
-          // Refresh patients
-          fetch("/api/patients")
-            .then(res => res.json())
-            .then(pdata => {
-              if (pdata.status === "success") {
-                setPatients(pdata.patients);
-                setSelectedPatient(data.patient.id);
-              }
-            });
-        }
-      })
-      .catch(err => console.error(err));
-  };
-
-  const latestHistory = patientHistory[patientHistory.length - 1];
-  const previousHistory = patientHistory[patientHistory.length - 2];
-  const riskChange =
-    latestHistory && previousHistory
-      ? Number((latestHistory.score - previousHistory.score).toFixed(1))
-      : null;
-  const riskStatus = latestHistory
-    ? latestHistory.score >= 70
-      ? "Elevated screening signal"
-      : latestHistory.score >= 40
-        ? "Monitor over time"
-        : "Lower screening signal"
-    : "Awaiting assessment data";
-
-  const selectedPatientData = patients.find(p => p.id === selectedPatient);
+  const radarData = [
+    { subject: "Typing", current: 85, previous: 90 },
+    { subject: "Mouse", current: 75, previous: 80 },
+    { subject: "Spiral", current: 80, previous: 75 },
+    { subject: "Voice", current: 70, previous: 75 },
+    { subject: "Gait", current: 82, previous: 85 },
+  ];
 
   return (
-    <div
-      className="fade-in"
-      style={{ paddingBottom: "3rem", position: "relative" }}
-    >
-      {showAddPatient && (
-        <div style={{
-          position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
-          background: "rgba(15, 23, 42, 0.7)", backdropFilter: "blur(4px)",
-          zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center"
-        }}>
-          <div style={{
-            background: "var(--panel-bg)", padding: "2.5rem", borderRadius: "16px",
-            maxWidth: "500px", width: "90%", border: "1px solid var(--panel-border)",
-            boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)"
-          }}>
-            <h2 style={{ fontSize: "1.5rem", marginBottom: "1.5rem", color: "var(--text-main)" }}>Add New Patient</h2>
-            <form onSubmit={handleAddPatient} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              <input type="text" placeholder="Full Name" className="login-input" required 
-                value={newPatient.name} onChange={e => setNewPatient({...newPatient, name: e.target.value})} />
-              <input type="number" placeholder="Age" className="login-input" required 
-                value={newPatient.age} onChange={e => setNewPatient({...newPatient, age: e.target.value})} />
-              <select className="login-input" value={newPatient.gender} onChange={e => setNewPatient({...newPatient, gender: e.target.value})}>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-              </select>
-              <textarea placeholder="Clinical Notes (Optional)" className="login-input" rows={3}
-                value={newPatient.notes} onChange={e => setNewPatient({...newPatient, notes: e.target.value})} />
-              <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
-                <button type="button" className="btn btn-outline" style={{ flex: 1 }} onClick={() => setShowAddPatient(false)}>Cancel</button>
-                <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>Save Patient</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {showConsent && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: "rgba(15, 23, 42, 0.7)",
-            backdropFilter: "blur(4px)",
-            zIndex: 1000,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <div
-            style={{
-              background: "var(--panel-bg)",
-              padding: "2.5rem",
-              borderRadius: "16px",
-              maxWidth: "500px",
-              width: "90%",
-              border: "1px solid var(--panel-border)",
-              boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                marginBottom: "1.5rem",
-                color: "var(--primary)",
-              }}
-            >
-              <svg
-                width="48"
-                height="48"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                <path d="M9 12l2 2 4-4"></path>
-              </svg>
-            </div>
-            <h2
-              style={{
-                textAlign: "center",
-                fontSize: "1.5rem",
-                marginBottom: "1rem",
-                color: "var(--text-main)",
-              }}
-            >
-              Clinical Data Privacy Consent
-            </h2>
-            <p
-              style={{
-                color: "var(--text-muted)",
-                lineHeight: 1.6,
-                marginBottom: "1.5rem",
-                textAlign: "justify",
-              }}
-            >
-              NeuroSense collects and processes biometric telemetry (keystrokes,
-              mouse tracking, voice, and gait) for diagnostic purposes. All data
-              is end-to-end encrypted and HIPAA compliant. By proceeding, you
-              confirm that you have obtained informed consent from the patient
-              and agree to our clinical data handling policies.
-            </p>
-            <div style={{ display: "flex", gap: "1rem", marginTop: "2rem" }}>
-              <button
-                className="btn btn-outline"
-                style={{ flex: 1, padding: "0.75rem" }}
-                onClick={() => {
-                  alert("You must accept to use the platform.");
-                }}
-              >
-                Decline
-              </button>
-              <button
-                className="btn btn-primary"
-                style={{ flex: 1, padding: "0.75rem" }}
-                onClick={() => {
-                  localStorage.setItem("clinical_consent", "true");
-                  setShowConsent(false);
-                }}
-              >
-                I Agree & Consent
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="page-header dashboard-header">
+    <div className="fade-in" style={{ paddingBottom: "3rem", display: "flex", flexDirection: "column", gap: "2rem" }}>
+      {/* Header Section */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
         <div>
-          <h1 className="dashboard-title">
-            NeuroSense Dashboard
+          <h1 style={{ color: "var(--text-main)", fontSize: "2.5rem", fontWeight: 700, margin: "0 0 0.75rem 0", fontFamily: "'Inter', sans-serif", letterSpacing: "-0.5px" }}>
+            Motor Consistency Overview
           </h1>
-          <p className="dashboard-subtitle">
-            Clinical Intelligence & Remote Patient Monitoring Platform
+          <p style={{ color: "var(--text-muted)", margin: 0, fontSize: "1rem" }}>
+            Track your current assessment, personal baseline, and longitudinal trends.
           </p>
         </div>
-        <div className="dashboard-actions">
-          <span className="badge badge-active system-badge">
-            System Ready
-          </span>
-          <button
-            className="btn btn-primary"
-            onClick={() => navigate("/comprehensive")}
-            style={{ 
-              padding: "0.8rem 1.5rem", 
-              fontSize: "1rem"
-            }}
+        <div style={{ display: "flex", gap: "1rem" }}>
+          <button 
+            className="btn" 
+            onClick={() => navigate("/sequential")}
+            style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.75rem 1.5rem", fontSize: "1rem", background: "var(--bg-main)", color: "var(--primary)", border: "1px solid var(--primary)" }}
           >
-            <svg
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 9.36l-7.1 7.1a1 1 0 0 1-1.4 0l-2.8-2.8a1 1 0 0 1 0-1.4l7.1-7.1a6 6 0 0 1 9.36-7.94z" />
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
             </svg>
-            Comprehensive Assessment
+            Sequential Mode
+          </button>
+          <button 
+            className="btn btn-primary" 
+            onClick={() => navigate("/assessment")}
+            style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.75rem 1.5rem", fontSize: "1rem" }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            Start Assessment
           </button>
         </div>
       </div>
 
-      {/* System Stats Row */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-          gap: "1.5rem",
-          marginBottom: "3.5rem",
-        }}
-      >
-        <div className="stat-card">
-          <div
-            className="stat-icon"
-            style={{ background: "rgba(59, 130, 246, 0.1)", color: "#3b82f6" }}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              width="24"
-              height="24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-            </svg>
+      {/* Metrics Cards */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1.5rem" }}>
+        <div className="module-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+          <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.05em", textTransform: "uppercase", marginBottom: "1rem" }}>
+            Motor Consistency Profile
           </div>
-          <div className="stat-info">
-            <h3>Active Pipelines</h3>
-            <p>{stats.active_pipelines} / 6 Online</p>
+          <div>
+            <div style={{ fontSize: "2.5rem", fontWeight: 300, color: "var(--primary)", lineHeight: 1 }}>
+              78 <span style={{ fontSize: "1.25rem", color: "var(--text-muted)" }}>/ 100</span>
+            </div>
+            <div style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginTop: "0.5rem" }}>
+              Prototype behavioral score
+            </div>
           </div>
         </div>
 
-        <div className="stat-card">
-          <div
-            className="stat-icon"
-            style={{ background: "rgba(16, 185, 129, 0.1)", color: "#10b981" }}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              width="24"
-              height="24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M20 6L9 17l-5-5" />
-            </svg>
+        <div className="module-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+          <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.05em", textTransform: "uppercase", marginBottom: "1rem" }}>
+            Assessment Quality
           </div>
-          <div className="stat-info">
-            <h3>Clinical Certainty</h3>
-            <p>{stats.model_confidence}% Avg</p>
+          <div>
+            <div style={{ fontSize: "2.5rem", fontWeight: 300, color: "#10b981", lineHeight: 1 }}>
+              91%
+            </div>
+            <div style={{ color: "#10b981", fontSize: "0.85rem", marginTop: "0.5rem", fontWeight: 500 }}>
+              High-quality assessment
+            </div>
           </div>
         </div>
 
-        <div className="stat-card">
-          <div
-            className="stat-icon"
-            style={{ background: "rgba(139, 92, 246, 0.1)", color: "#8b5cf6" }}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              width="24"
-              height="24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-            </svg>
+        <div className="module-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+          <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.05em", textTransform: "uppercase", marginBottom: "1rem" }}>
+            Baseline Change
           </div>
-          <div className="stat-info">
-            <h3>Analyzed Sessions</h3>
-            <p>{stats.analyzed_sessions.toLocaleString()} Total</p>
+          <div>
+            <div style={{ fontSize: "2.5rem", fontWeight: 300, color: "var(--primary)", lineHeight: 1 }}>
+              -4.2%
+            </div>
+            <div style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginTop: "0.5rem" }}>
+              Compared with previous session
+            </div>
           </div>
         </div>
 
-        <div className="stat-card">
-          <div
-            className="stat-icon"
-            style={{ background: "rgba(245, 158, 11, 0.1)", color: "#f59e0b" }}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              width="24"
-              height="24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg>
+        <div className="module-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+          <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.05em", textTransform: "uppercase", marginBottom: "1rem" }}>
+            Completed Modalities
           </div>
-          <div className="stat-info">
-            <h3>HIPAA Status</h3>
-            <p>Compliant</p>
+          <div>
+            <div style={{ fontSize: "2.5rem", fontWeight: 300, color: "var(--primary)", lineHeight: 1 }}>
+              5 <span style={{ fontSize: "1.25rem", color: "var(--text-muted)" }}>/ 5</span>
+            </div>
+            <div style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginTop: "0.5rem" }}>
+              All modalities assessed
+            </div>
           </div>
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 350px), 1fr))", gap: "1.5rem", marginBottom: "3.5rem" }}>
-        <section className="tracking-panel" style={{ margin: 0, height: "100%", gridColumn: "span 2" }}>
-          <div className="tracking-header">
-            <div>
-              <span className="section-kicker">Patient monitoring</span>
-              <h2 className="tracking-title">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="var(--primary)"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-                </svg>
-                Longitudinal tracking
-              </h2>
-              <p className="tracking-subtitle">
-                Review screening risk movement across completed assessments.
-              </p>
-            </div>
-            <div className="tracking-controls">
-              <button 
-                className="btn btn-outline" 
-                style={{ padding: "0 1rem", fontSize: "0.85rem", height: "38px" }}
-                onClick={() => setShowAddPatient(true)}
-              >
-                + New Patient
-              </button>
-              {patients.length > 0 && (
-                <>
-                  <button 
-                    className="btn btn-outline" 
-                    style={{ padding: "0 1rem", fontSize: "0.85rem", height: "38px", borderColor: "var(--primary)", color: "var(--primary)" }}
-                    onClick={() => window.open(`/api/patients/${selectedPatient}/fhir`, "_blank")}
-                    title="Export latest assessment in FHIR format for EMR integration"
-                  >
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
-                    </svg>
-                    Export EMR
-                  </button>
-                  <label className="patient-select-wrap">
-                    <span style={{ fontSize: "0.75rem" }}>Patient record</span>
-                    <select
-                      className="patient-select"
-                      style={{ height: "38px", padding: "0 2rem 0 0.75rem" }}
-                      value={selectedPatient}
-                      onChange={(e) => setSelectedPatient(e.target.value)}
-                    >
-                      {patients.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.name} ({p.id})
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                </>
-              )}
-            </div>
+      {/* Main Panels */}
+      <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: "1.5rem" }}>
+        
+        {/* Radar Chart Panel */}
+        <div className="module-card" style={{ padding: "1.5rem 2rem", display: "flex", flexDirection: "column" }}>
+          <div style={{ marginBottom: "1.5rem" }}>
+            <h3 style={{ fontSize: "1.2rem", fontWeight: 600, color: "var(--text-main)", margin: "0 0 0.25rem 0" }}>Motor Profile Visualization</h3>
+            <p style={{ color: "var(--text-muted)", margin: 0, fontSize: "0.9rem" }}>Current session vs. previous session</p>
+          </div>
+          <div style={{ flex: 1, minHeight: "350px", width: "100%" }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
+                <PolarGrid stroke="var(--panel-border)" />
+                <PolarAngleAxis dataKey="subject" tick={{ fill: "var(--text-muted)", fontSize: 12 }} />
+                <Radar name="Current Session" dataKey="current" stroke="var(--primary)" fill="var(--primary)" fillOpacity={0.2} />
+                <Radar name="Previous Session" dataKey="previous" stroke="#d946ef" fill="#d946ef" fillOpacity={0.0} strokeDasharray="5 5" />
+                <Legend iconType="plainline" wrapperStyle={{ fontSize: "0.85rem", paddingTop: "20px" }} />
+              </RadarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Baseline Panel */}
+        <div className="module-card" style={{ padding: "2rem", display: "flex", flexDirection: "column" }}>
+          <h3 style={{ fontSize: "1.2rem", fontWeight: 600, color: "var(--text-main)", margin: "0 0 0.5rem 0" }}>Personal Baseline</h3>
+          <p style={{ color: "var(--text-muted)", margin: "0 0 2rem 0", fontSize: "0.9rem", lineHeight: 1.5 }}>
+            Your current motor profile compared with your previous assessment.
+          </p>
+          
+          <div style={{ marginBottom: "0.75rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+            <span style={{ fontSize: "0.9rem", color: "var(--text-main)", fontWeight: 500 }}>Current profile</span>
+            <span style={{ fontSize: "0.9rem", color: "var(--text-main)", fontWeight: 600 }}>78 / 100</span>
+          </div>
+          
+          <div style={{ width: "100%", height: "8px", background: "var(--panel-border)", borderRadius: "4px", marginBottom: "2rem", overflow: "hidden" }}>
+            <div style={{ width: "78%", height: "100%", background: "var(--primary)", borderRadius: "4px" }}></div>
           </div>
 
-          {patients.length > 0 ? (
-            <>
-            <div className="tracking-summary">
-              <div className="tracking-patient">
-                <span className="patient-avatar">
-                  {selectedPatient.slice(-2)}
-                </span>
-                <div>
-                  <span className="summary-label">Active patient</span>
-                  <strong>{selectedPatientData ? `${selectedPatientData.name} (${selectedPatientData.id})` : selectedPatient}</strong>
-                </div>
-                <span className="tracking-status">
-                  <span /> Monitoring active
-                </span>
-              </div>
-              <div className="tracking-metrics">
-                <div className="tracking-metric">
-                  <span className="summary-label">Latest risk score</span>
-                  <strong>
-                    {latestHistory ? `${latestHistory.score.toFixed(1)}%` : "--"}
-                  </strong>
-                </div>
-                <div className="tracking-metric">
-                  <span className="summary-label">Change vs prior</span>
-                  <strong
-                    className={
-                      riskChange !== null && riskChange > 0
-                        ? "metric-up"
-                        : "metric-down"
-                    }
-                  >
-                    {riskChange === null
-                      ? "--"
-                      : `${riskChange > 0 ? "+" : ""}${riskChange.toFixed(1)}%`}
-                  </strong>
-                </div>
-                <div className="tracking-metric tracking-interpretation">
-                  <span className="summary-label">Current interpretation</span>
-                  <strong>{riskStatus}</strong>
-                </div>
-              </div>
-            </div>
-
-            <div className="tracking-chart">
-              {patientHistory.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart
-                    data={patientHistory}
-                    margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
-                  >
-                    <CartesianGrid
-                      strokeDasharray="3 3"
-                      stroke="var(--panel-border)"
-                      vertical={false}
-                    />
-                    <XAxis
-                      dataKey="date"
-                      stroke="var(--text-muted)"
-                      fontSize={12}
-                      tickLine={false}
-                      axisLine={false}
-                    />
-                    <YAxis
-                      stroke="var(--text-muted)"
-                      fontSize={12}
-                      tickLine={false}
-                      axisLine={false}
-                      domain={[0, 100]}
-                      tickFormatter={(value) => `${value}%`}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        borderRadius: "8px",
-                        border: "1px solid var(--panel-border)",
-                        boxShadow: "0 4px 6px rgba(0,0,0,0.05)",
-                      }}
-                      itemStyle={{ color: "var(--primary)", fontWeight: 600 }}
-                      formatter={(value) => [`${value}%`, "Risk score"]}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="score"
-                      name="Risk score"
-                      stroke="var(--primary)"
-                      strokeWidth={3}
-                      dot={{ r: 4, strokeWidth: 2 }}
-                      activeDot={{ r: 6 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              ) : (
-                <div
-                  style={{
-                    display: "flex",
-                    height: "100%",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "var(--text-muted)",
-                  }}
-                >
-                  No history data available for this patient.
-                </div>
-              )}
-            </div>
-            <p className="tracking-note">
-              Screening scores support clinical review and should be interpreted
-              alongside patient history and professional assessment.
-            </p>
-            </>
-          ) : (
-            <div style={{ padding: "4rem 2rem", textAlign: "center", color: "var(--text-muted)", background: "rgba(0,0,0,0.02)", borderRadius: "8px", flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-              <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ margin: "0 auto 1rem", opacity: 0.5 }}>
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          <div style={{ background: "rgba(15, 23, 42, 0.03)", border: "1px solid var(--panel-border)", borderRadius: "8px", padding: "1.25rem", marginBottom: "2rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--primary)", fontWeight: 600, marginBottom: "0.25rem", fontSize: "0.95rem" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
               </svg>
-              <h3 style={{ fontSize: "1.2rem", color: "var(--text-main)", marginBottom: "0.5rem" }}>No Patients Found</h3>
-              <p style={{ marginBottom: "1.5rem" }}>Your clinical database is currently empty. Add a patient to begin tracking.</p>
-              <button className="btn btn-primary" style={{ margin: "0 auto" }} onClick={() => setShowAddPatient(true)}>
-                + Add First Patient
-              </button>
+              -4.2% baseline deviation
             </div>
-          )}
-        </section>
-
-        {companionUrl && (
-          <section className="tracking-panel" style={{ margin: 0, height: "100%", display: "flex", flexDirection: "column", gridColumn: "span 1" }}>
-            <div className="tracking-header" style={{ borderBottom: "none", flex: 1 }}>
-              <div>
-                <span className="section-kicker">Mobile Integration</span>
-                <h2 className="tracking-title">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line>
-                  </svg>
-                  Mobile Full Access
-                </h2>
-                <p className="tracking-subtitle">
-                  Scan this QR code with your phone to instantly log in. You can use all modules, including Voice and Gait capture, directly from your mobile browser without entering credentials again.
-                </p>
-              </div>
-            </div>
-            <div style={{ background: "white", padding: "1.5rem", borderRadius: "12px", border: "1px solid var(--panel-border)", alignSelf: "center", marginBottom: "1rem" }}>
-              <QRCodeSVG value={companionUrl} size={160} />
-            </div>
-          </section>
-        )}
-      </div>
-
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "1.5rem",
-          paddingBottom: "1rem",
-          borderBottom: "1px solid var(--panel-border)",
-        }}
-      >
-        <h2
-          style={{
-            fontSize: "1.4rem",
-            fontWeight: 600,
-            color: "var(--text-main)",
-          }}
-        >
-          Individual Diagnostic Modalities
-        </h2>
-      </div>
-
-      <div className="modules-grid">
-        {MODULES.map((mod) => (
-          <div
-            key={mod.id}
-            className="module-card"
-            onClick={() => navigate(`/module/${mod.id}`)}
-          >
-            <div className="module-header">
-              <div className="module-icon">
-                <svg viewBox="0 0 24 24">{mod.icon}</svg>
-              </div>
-              <span className="module-title">{mod.name}</span>
-            </div>
-
-            <p className="module-desc">{mod.desc}</p>
-
-            <div className="module-footer">
-              <span className="module-action-text">Launch Module</span>
-              <svg
-                className="module-arrow"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
+            <div style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginLeft: "1.8rem" }}>
+              Based on 3 previous sessions
             </div>
           </div>
-        ))}
+
+          <button 
+            className="btn btn-outline" 
+            onClick={() => navigate("/history")}
+            style={{ width: "100%", padding: "0.85rem", marginTop: "auto", fontSize: "0.95rem" }}
+          >
+            View history
+          </button>
+        </div>
+
       </div>
     </div>
   );

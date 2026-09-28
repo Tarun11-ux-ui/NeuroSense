@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { MODULES } from "./Dashboard";
 import type { KeystrokeEvent, MouseEventLog } from "../types";
 import { MODULE_TASKS } from "../utils/tasks";
-import { QRCodeSVG } from "qrcode.react";
+
 import {
   listCaptureDevices,
   selectedDevice,
@@ -35,31 +35,16 @@ async function readApiResponse(response: Response): Promise<any> {
   }
 }
 
-export default function ModuleCapture() {
-  const { id } = useParams<{ id: string }>();
+export default function ModuleCapture({ moduleIdProp, onBack, onNext }: { moduleIdProp?: string, onBack?: () => void, onNext?: (res?: any) => void }) {
+  const { id: paramId } = useParams<{ id: string }>();
+  const id = moduleIdProp || paramId;
   const navigate = useNavigate();
-  const moduleInfo = MODULES.find((m) => m.id === id);
+  const moduleInfo = MODULES.find((m: any) => m.id === id);
   const [keystrokes, setKeystrokes] = useState<KeystrokeEvent[]>([]);
-  const companionId = localStorage.getItem("neurosense_companion_id");
+  // const companionId = localStorage.getItem("neurosense_companion_id");
   const [remoteSessionId, setRemoteSessionId] = useState<string | null>(null);
 
-  const startCompanionCapture = async () => {
-    if (!companionId) {
-      alert("No companion paired. Pair one on the dashboard.");
-      return;
-    }
-    try {
-      await fetch(`/api/companion/${companionId}/command`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ command: `start_${id}` }),
-      });
-      setRemoteSessionId(companionId);
-    } catch (e) {
-      console.error(e);
-      alert("Failed to start companion capture.");
-    }
-  };
+
 
   useEffect(() => {
     if (!remoteSessionId) return;
@@ -121,8 +106,8 @@ export default function ModuleCapture() {
   // Voice Recording State
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
-  const [microphones, setMicrophones] = useState<CaptureDevice[]>([]);
-  const [cameras, setCameras] = useState<CaptureDevice[]>([]);
+  const [, setMicrophones] = useState<CaptureDevice[]>([]);
+  const [, setCameras] = useState<CaptureDevice[]>([]);
   const [selectedMicrophone, setSelectedMicrophone] = useState("");
   const [selectedCamera, setSelectedCamera] = useState("");
   const mediaRecorder = useRef<MediaRecorder | null>(null);
@@ -1578,6 +1563,17 @@ export default function ModuleCapture() {
               })}
             </div>
           </div>
+          {onNext && (
+            <div style={{ marginTop: "2rem", display: "flex", justifyContent: "flex-end" }}>
+              <button 
+                className="btn btn-primary"
+                onClick={() => onNext(analysisResults)}
+                style={{ padding: "0.75rem 2rem", fontSize: "1.05rem" }}
+              >
+                Continue to Next Module &rarr;
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -1588,8 +1584,8 @@ export default function ModuleCapture() {
       <div className="capture-header">
         <div
           className="back-btn"
-          onClick={() => navigate("/dashboard")}
-          title="Back to Dashboard"
+          onClick={() => (onBack ? onBack() : navigate(-1))}
+          title="Back"
         >
           <svg
             width="20"

@@ -1,0 +1,14 @@
+Options:
+  --figma-api-key         Figma API key (Personal Access Token)         [string]
+  --figma-oauth-token     Figma OAuth Bearer token                      [string]
+  --env                   Path to custom .env file to load environment variables
+                           from                                         [string]
+  --port                  Port to run the server on                     [number]
+  --json                  Output data from tools in JSON format instead of YAML
+                                                      [boolean] [default: false]
+  --skip-image-downloads  Do not register the download_figma_images tool (skip i
+                          mage downloads)             [boolean] [default: false]
+  --figma-caching         Figma caching configuration as JSON string, e.g. '{"tt
+                          l":{"value":30,"unit":"d"}}'                  [string]
+  --help                  Show help                                    [boolean]
+  --version               Show version number                          [boolean]

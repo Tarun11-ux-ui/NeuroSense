@@ -232,13 +232,21 @@ def request_otp(req: OTPRequest):
     cursor.execute('SELECT password_hash FROM users WHERE email = ?', (email,))
     row = cursor.fetchone()
     
-    if not row or not row[0]:
+    if not row:
         conn.close()
-        raise HTTPException(status_code=400, detail="Invalid email or password")
+        raise HTTPException(status_code=400, detail="Account not found. Please sign up first.")
         
-    if not bcrypt.checkpw(req.password.encode('utf-8'), row[0].encode('utf-8')):
-        conn.close()
-        raise HTTPException(status_code=400, detail="Invalid email or password")
+    db_password_hash = row[0]
+    
+    if not db_password_hash:
+        # Legacy user with no password hash - set it to the provided password
+        new_hashed = bcrypt.hashpw(req.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        cursor.execute('UPDATE users SET password_hash = ? WHERE email = ?', (new_hashed, email))
+        conn.commit()
+    else:
+        if not bcrypt.checkpw(req.password.encode('utf-8'), db_password_hash.encode('utf-8')):
+            conn.close()
+            raise HTTPException(status_code=400, detail="Invalid password. Please try again.")
     
     otp_code = str(random.randint(1000, 9999))
     expiry = datetime.datetime.now() + datetime.timedelta(minutes=10)
