@@ -5,121 +5,79 @@ export default function Settings() {
   const [notifications, setNotifications] = useState({ email: true, push: false });
 
   return (
-    <div className="fade-in" style={{ paddingBottom: "3rem" }}>
-      <div style={{ marginBottom: "3rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+    <div className="settings-page fade-in">
+      <header className="settings-header">
         <div>
-          <h1 style={{ fontSize: "2.5rem", fontWeight: 700, color: "var(--text-main)", margin: "0 0 0.75rem 0", fontFamily: "'Inter', sans-serif", letterSpacing: "-0.5px" }}>Settings</h1>
-          <p style={{ color: "var(--text-muted)", margin: 0, fontSize: "1rem" }}>Manage your account, preferences, and system configuration.</p>
+          <p className="settings-kicker">Workspace</p>
+          <h1>Settings</h1>
+          <p>Manage your account, preferences, and clinical workspace configuration.</p>
         </div>
-        <div>
-          <button style={{ padding: "0.6rem 1.5rem", background: "#8b5cf6", color: "white", border: "none", borderRadius: "8px", fontWeight: 500, cursor: "pointer", transition: "0.2s" }} onMouseEnter={(e) => e.currentTarget.style.background = "#7c3aed"} onMouseLeave={(e) => e.currentTarget.style.background = "#8b5cf6"}>
-            Save Changes
-          </button>
-        </div>
-      </div>
+        <button className="btn btn-primary settings-save" type="button">Save changes</button>
+      </header>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "2rem", maxWidth: "800px" }}>
-        
-        {/* Profile Settings */}
-        <section>
-          <h2 style={{ fontSize: "1.05rem", fontWeight: 600, color: "#1e293b", marginBottom: "1rem", paddingBottom: "0.5rem", borderBottom: "1px solid #f1f5f9", fontFamily: "'Inter', sans-serif" }}>
-            Profile Settings
-          </h2>
-          <div style={{ background: "#ffffff", padding: "1.5rem 2rem", borderRadius: "12px", border: "1px solid #f1f5f9", boxShadow: "0 1px 3px rgba(0,0,0,0.02)" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "2rem", alignItems: "center", marginBottom: "1.5rem" }}>
-              <div style={{ fontWeight: 500, color: "#1e293b", fontSize: "0.95rem" }}>Email Address</div>
-              <input type="email" defaultValue="dr.smith@neurosense.ai" style={{ width: "100%", padding: "0.6rem 1rem", borderRadius: "8px", border: "1px solid #e2e8f0", background: "#f8fafc", color: "#1e293b", outline: "none", fontSize: "0.95rem", transition: "0.2s" }} onFocus={(e) => e.target.style.borderColor = "#8b5cf6"} onBlur={(e) => e.target.style.borderColor = "#e2e8f0"} />
+      <main className="settings-content">
+        <section className="settings-section">
+          <div className="settings-section-heading">
+            <div className="settings-section-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "2rem", alignItems: "center" }}>
-              <div style={{ fontWeight: 500, color: "#1e293b", fontSize: "0.95rem" }}>Language</div>
-              <select style={{ width: "100%", padding: "0.6rem 1rem", borderRadius: "8px", border: "1px solid #e2e8f0", background: "#f8fafc", color: "#1e293b", outline: "none", fontSize: "0.95rem", transition: "0.2s" }} onFocus={(e) => e.target.style.borderColor = "#8b5cf6"} onBlur={(e) => e.target.style.borderColor = "#e2e8f0"}>
-                <option value="en">English (US)</option>
-                <option value="es">Spanish</option>
-                <option value="fr">French</option>
-              </select>
+            <div><h2>Profile</h2><p>Identity and regional preferences for your workspace.</p></div>
+          </div>
+          <div className="settings-card">
+            <label className="settings-field">
+              <span>Email address</span>
+              <input type="email" defaultValue="dr.smith@neurosense.ai" />
+            </label>
+            <label className="settings-field">
+              <span>Language</span>
+              <select defaultValue="en"><option value="en">English (US)</option><option value="es">Spanish</option><option value="fr">French</option></select>
+            </label>
+          </div>
+        </section>
+
+        <section className="settings-section">
+          <div className="settings-section-heading">
+            <div className="settings-section-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            </div>
+            <div><h2>Security</h2><p>Keep your account and clinical data protected.</p></div>
+          </div>
+          <div className="settings-card settings-list-card">
+            <div className="settings-row">
+              <div><strong>Password</strong><span>Last changed 3 months ago</span></div>
+              <button className="btn btn-outline settings-row-action" type="button">Change password</button>
+            </div>
+            <div className="settings-row">
+              <div><strong>Two-factor authentication</strong><span>Add an extra layer of account protection.</span></div>
+              <label className="settings-toggle"><input type="checkbox" defaultChecked /><span aria-hidden="true"></span><em>Enabled</em></label>
             </div>
           </div>
         </section>
 
-        {/* Security */}
-        <section>
-          <h2 style={{ fontSize: "1.05rem", fontWeight: 600, color: "#1e293b", marginBottom: "1rem", paddingBottom: "0.5rem", borderBottom: "1px solid #f1f5f9", fontFamily: "'Inter', sans-serif" }}>
-            Security
-          </h2>
-          <div style={{ background: "#ffffff", padding: "1.5rem 2rem", borderRadius: "12px", border: "1px solid #f1f5f9", boxShadow: "0 1px 3px rgba(0,0,0,0.02)" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "2rem", alignItems: "center", marginBottom: "1.5rem" }}>
-              <div>
-                <div style={{ fontWeight: 500, color: "#1e293b", fontSize: "0.95rem" }}>Password</div>
-                <div style={{ fontSize: "0.85rem", color: "#64748b" }}>Last changed 3 months ago</div>
-              </div>
-              <div>
-                <button style={{ padding: "0.5rem 1rem", background: "transparent", color: "#475569", border: "1px solid #e2e8f0", borderRadius: "8px", fontWeight: 500, cursor: "pointer", transition: "0.2s" }} onMouseEnter={(e) => e.currentTarget.style.borderColor = "#cbd5e1"} onMouseLeave={(e) => e.currentTarget.style.borderColor = "#e2e8f0"}>
-                  Change Password
-                </button>
+        <section className="settings-section">
+          <div className="settings-section-heading">
+            <div className="settings-section-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6h.01A1.65 1.65 0 0 0 10 3.09V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.14.37.5.61.9.61H21a2 2 0 1 1 0 4h-.7c-.4 0-.76.24-.9.61Z"/></svg>
+            </div>
+            <div><h2>Preferences</h2><p>Choose how NeuroSense looks and communicates with you.</p></div>
+          </div>
+          <div className="settings-card settings-list-card">
+            <div className="settings-row settings-row-preference">
+              <div><strong>Interface theme</strong><span>Choose the appearance of your workspace.</span></div>
+              <div className="settings-choice-group" role="radiogroup" aria-label="Interface theme">
+                {['light', 'dark', 'system'].map((option) => <label key={option} className={theme === option ? 'selected' : ''}><input type="radio" name="theme" value={option} checked={theme === option} onChange={() => setTheme(option)} /><span>{option}</span></label>)}
               </div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "2rem", alignItems: "center" }}>
-              <div>
-                <div style={{ fontWeight: 500, color: "#1e293b", fontSize: "0.95rem" }}>Two-Factor Auth</div>
-                <div style={{ fontSize: "0.85rem", color: "#64748b" }}>Protect your clinical data</div>
-              </div>
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
-                  <input type="checkbox" defaultChecked style={{ width: "18px", height: "18px", accentColor: "#8b5cf6" }} />
-                  <span style={{ fontSize: "0.95rem", color: "#475569" }}>Enabled</span>
-                </label>
+            <div className="settings-row settings-row-preference">
+              <div><strong>Notifications</strong><span>Control the alerts sent to your workspace.</span></div>
+              <div className="settings-notification-options">
+                <label><input type="checkbox" checked={notifications.email} onChange={(event) => setNotifications({ ...notifications, email: event.target.checked })} /><span>Email alerts</span></label>
+                <label><input type="checkbox" checked={notifications.push} onChange={(event) => setNotifications({ ...notifications, push: event.target.checked })} /><span>Push notifications</span></label>
               </div>
             </div>
           </div>
         </section>
-
-        {/* System Preferences */}
-        <section>
-          <h2 style={{ fontSize: "1.05rem", fontWeight: 600, color: "#1e293b", marginBottom: "1rem", paddingBottom: "0.5rem", borderBottom: "1px solid #f1f5f9", fontFamily: "'Inter', sans-serif" }}>
-            System Preferences
-          </h2>
-          <div style={{ background: "#ffffff", padding: "1.5rem 2rem", borderRadius: "12px", border: "1px solid #f1f5f9", boxShadow: "0 1px 3px rgba(0,0,0,0.02)" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "2rem", alignItems: "flex-start", marginBottom: "1.5rem" }}>
-              <div>
-                <div style={{ fontWeight: 500, color: "#1e293b", fontSize: "0.95rem" }}>Theme</div>
-                <div style={{ fontSize: "0.85rem", color: "#64748b" }}>Customize UI appearance</div>
-              </div>
-              <div style={{ display: "flex", gap: "1rem" }}>
-                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
-                  <input type="radio" name="theme" checked={theme === "light"} onChange={() => setTheme("light")} style={{ width: "18px", height: "18px", accentColor: "#8b5cf6" }} />
-                  <span style={{ color: "#475569", fontSize: "0.95rem" }}>Light</span>
-                </label>
-                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
-                  <input type="radio" name="theme" checked={theme === "dark"} onChange={() => setTheme("dark")} style={{ width: "18px", height: "18px", accentColor: "#8b5cf6" }} />
-                  <span style={{ color: "#475569", fontSize: "0.95rem" }}>Dark</span>
-                </label>
-                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
-                  <input type="radio" name="theme" checked={theme === "system"} onChange={() => setTheme("system")} style={{ width: "18px", height: "18px", accentColor: "#8b5cf6" }} />
-                  <span style={{ color: "#475569", fontSize: "0.95rem" }}>System</span>
-                </label>
-              </div>
-            </div>
-            
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "2rem", alignItems: "flex-start" }}>
-              <div>
-                <div style={{ fontWeight: 500, color: "#1e293b", fontSize: "0.95rem" }}>Notifications</div>
-                <div style={{ fontSize: "0.85rem", color: "#64748b" }}>How we contact you</div>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
-                  <input type="checkbox" checked={notifications.email} onChange={(e) => setNotifications({...notifications, email: e.target.checked})} style={{ width: "18px", height: "18px", accentColor: "#8b5cf6" }} />
-                  <span style={{ color: "#475569", fontSize: "0.95rem" }}>Email Alerts</span>
-                </label>
-                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
-                  <input type="checkbox" checked={notifications.push} onChange={(e) => setNotifications({...notifications, push: e.target.checked})} style={{ width: "18px", height: "18px", accentColor: "#8b5cf6" }} />
-                  <span style={{ color: "#475569", fontSize: "0.95rem" }}>Push Notifications</span>
-                </label>
-              </div>
-            </div>
-          </div>
-        </section>
-
-      </div>
+      </main>
     </div>
   );
 }

@@ -44,6 +44,7 @@ function Sidebar({ setIsAuthenticated }: { setIsAuthenticated: (val: boolean) =>
         NeuroSense
       </div>
       <nav className="sidebar-nav">
+        <span className="sidebar-nav-label">Workspace</span>
         <Link to="/dashboard" className={`sidebar-link ${isActive('/dashboard') ? 'active' : ''}`}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
           Dashboard
@@ -69,13 +70,13 @@ function Sidebar({ setIsAuthenticated }: { setIsAuthenticated: (val: boolean) =>
           Settings
         </Link>
       </nav>
-      <div style={{ marginTop: 'auto', padding: '1.5rem', borderTop: '1px solid rgba(15, 23, 42, 0.05)' }}>
+      <div className="sidebar-footer">
         <button
-          className="btn"
+          className="btn sidebar-sign-out"
           style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', color: 'var(--text-muted)', border: '1px solid var(--panel-border)' }}
           onClick={() => setIsAuthenticated(false)}
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '0.5rem' }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" >
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
             <polyline points="16 17 21 12 16 7"></polyline>
             <line x1="21" y1="12" x2="9" y2="12"></line>

@@ -1580,7 +1580,7 @@ export default function ModuleCapture({ moduleIdProp, onBack, onNext }: { module
   };
 
   return (
-    <div className="fade-in capture-container">
+    <div className={`fade-in capture-container capture-${id}`}>
       <div className="capture-header">
         <div
           className="back-btn"
