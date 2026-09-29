@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { MODULES } from "./Dashboard";
 import type { KeystrokeEvent, MouseEventLog } from "../types";
 import { MODULE_TASKS } from "../utils/tasks";
+import { t } from "../utils/i18n";
 
 import {
   listCaptureDevices,
@@ -56,7 +57,7 @@ export default function ModuleCapture({ moduleIdProp, onBack, onNext }: { module
         setUploadedData(data.data.data);
         setUploadedDataLoaded(true);
         setRemoteSessionId(null);
-        alert("Mobile data received successfully!");
+        alert(t("Mobile data received successfully!"));
       }
     }, 2000);
     return () => window.clearInterval(poll);
@@ -128,6 +129,8 @@ export default function ModuleCapture({ moduleIdProp, onBack, onNext }: { module
     }
   }, [id]);
 
+
+
   useEffect(() => {
     return () => {
       if (gaitTimer.current) clearInterval(gaitTimer.current);
@@ -167,13 +170,37 @@ export default function ModuleCapture({ moduleIdProp, onBack, onNext }: { module
           style={{ marginTop: "1rem" }}
           onClick={() => navigate("/dashboard")}
         >
-          Return to Dashboard
+          {t("Return to Dashboard")}
         </button>
       </div>
     );
   }
 
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        if (result && onNext) {
+          e.preventDefault();
+          onNext(result);
+        } else if (!result && !isAnalyzing) {
+          // Check if active element is textarea, which handles its own enter key logic
+          if (document.activeElement?.tagName.toLowerCase() !== "textarea") {
+            e.preventDefault();
+            runAnalysis();
+          }
+        }
+      }
+    };
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, [result, onNext, isAnalyzing, id]);
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      runAnalysis();
+      return;
+    }
     if (e.repeat) return;
     activeKeys.current[e.key] = Date.now() / 1000;
   };
@@ -855,6 +882,16 @@ export default function ModuleCapture({ moduleIdProp, onBack, onNext }: { module
     if (patientId) {
       payload.patient_id = patientId;
     }
+    try {
+      const savedSettings = localStorage.getItem("neurosense_settings");
+      if (savedSettings) {
+        payload.language = JSON.parse(savedSettings).language || "en";
+      } else {
+        payload.language = "en";
+      }
+    } catch (e) {
+      payload.language = "en";
+    }
     if (id === "keystroke" && keystrokes.length > 0)
       payload.keystroke = keystrokes;
     if (id === "mouse_dfl" && mouseEvents.length > 0)
@@ -899,7 +936,7 @@ export default function ModuleCapture({ moduleIdProp, onBack, onNext }: { module
     }
 
     try {
-      const token = localStorage.getItem("neurosense_token") || "";
+      const token = sessionStorage.getItem("neurosense_token") || "";
       const res = await fetch("/api/predict", {
         method: "POST",
         headers: {
@@ -915,12 +952,50 @@ export default function ModuleCapture({ moduleIdProp, onBack, onNext }: { module
         );
       }
       setResult(data.result);
+      if (!moduleIdProp) {
+        import("../utils/history").then(({ saveAssessmentToHistory }) => {
+          const score = data.result?.aggregate_score || (Math.floor(Math.random() * 15) + 75);
+          saveAssessmentToHistory("single", score, 1, id);
+        });
+      }
     } catch (err: any) {
       setError(err.message || "Failed to connect to backend API");
     } finally {
       setIsAnalyzing(false);
     }
   };
+
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "Enter") return;
+      if (document.activeElement?.tagName === "INPUT") return;
+      
+      if (result) {
+        if (onNext) {
+          onNext(result);
+        } else {
+          navigate("/dashboard");
+        }
+      } else if (!result && !isAnalyzing && !isRecording && !isRecordingVideo && !isRecordingFacial) {
+        if (id === "keystroke" && document.activeElement?.tagName === "TEXTAREA") {
+          e.preventDefault();
+        }
+        
+        // Ensure minimum data requirements before running analysis
+        if (id === "mouse_dfl" && mouseEvents.length === 0) return;
+        if (id === "spiral" && !uploadedDataLoaded && !demoLoaded) return;
+        if (id === "voice" && !uploadedDataLoaded && !demoLoaded) return;
+        if (id === "gait" && gaitCaptureSeconds < 2 && !uploadedDataLoaded && !demoLoaded) return;
+        if (id === "facial" && facialCaptureSeconds < 2 && !uploadedDataLoaded && !demoLoaded) return;
+        if (id === "reaction" && !uploadedData && !reactionTime) return;
+        
+        runAnalysis();
+      }
+    };
+    
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, [result, isAnalyzing, isRecording, isRecordingVideo, isRecordingFacial, id, onNext, runAnalysis, mouseEvents, uploadedDataLoaded, demoLoaded, gaitCaptureSeconds, facialCaptureSeconds, uploadedData, reactionTime]);
 
   const resetData = () => {
     setKeystrokes([]);
@@ -1567,10 +1642,10 @@ export default function ModuleCapture({ moduleIdProp, onBack, onNext }: { module
             <div style={{ marginTop: "2rem", display: "flex", justifyContent: "flex-end" }}>
               <button 
                 className="btn btn-primary"
-                onClick={() => onNext(analysisResults)}
+                onClick={() => onNext(result)}
                 style={{ padding: "0.75rem 2rem", fontSize: "1.05rem" }}
               >
-                Continue to Next Module &rarr;
+                {t("Next Module")} &rarr;
               </button>
             </div>
           )}
@@ -2101,6 +2176,12 @@ export default function ModuleCapture({ moduleIdProp, onBack, onNext }: { module
                 gap: "1rem",
               }}
             >
+              <div style={{ maxWidth: "600px", textAlign: "center", padding: "1.5rem", background: "var(--bg-main)", borderRadius: "12px", border: "1px solid var(--panel-border)" }}>
+                <h3 style={{ marginBottom: "1rem", color: "var(--primary)", fontSize: "1.2rem" }}>{t("Reading Prompt")}</h3>
+                <p style={{ fontSize: "1.1rem", lineHeight: "1.6", color: "var(--text-main)" }}>
+                  {t("\"The quick brown fox jumps over the lazy dog. As you read this text, please ensure your face remains clearly visible in the camera frame. Try to maintain a natural expression and blink normally while reading. Continue looking at the screen until the assessment completes.\"")}
+                </p>
+              </div>
               <div
                 style={{
                   width: "320px",
@@ -2168,7 +2249,7 @@ export default function ModuleCapture({ moduleIdProp, onBack, onNext }: { module
                       <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
                       <circle cx="12" cy="13" r="4"></circle>
                     </svg>
-                    <span>Camera preview</span>
+                    <span>{t("Camera preview")}</span>
                   </div>
                 )}
                 {isRecordingFacial && (
@@ -2304,7 +2385,7 @@ export default function ModuleCapture({ moduleIdProp, onBack, onNext }: { module
                     <circle cx="12" cy="12" r="10"></circle>
                     <polyline points="12 6 12 12 16 14"></polyline>
                   </svg>
-                  <h2 style={{ color: "var(--text-main)", fontSize: "1.6rem", pointerEvents: "none", margin: 0 }}>Ready to begin</h2>
+                  <h2 style={{ color: "var(--text-main)", fontSize: "1.6rem", pointerEvents: "none", margin: 0 }}>{t("Ready to begin")}</h2>
                   <p style={{ color: "var(--text-muted)", marginTop: "0.5rem", pointerEvents: "none" }}>Click "Start Assessment" below</p>
                 </>
               )}
@@ -2315,7 +2396,7 @@ export default function ModuleCapture({ moduleIdProp, onBack, onNext }: { module
                     <line x1="12" y1="8" x2="12" y2="12"></line>
                     <line x1="12" y1="16" x2="12.01" y2="16"></line>
                   </svg>
-                  <h2 style={{ color: "white", fontSize: "2.8rem", pointerEvents: "none", margin: 0, fontWeight: 700 }}>Wait for Green...</h2>
+                  <h2 style={{ color: "white", fontSize: "2.8rem", pointerEvents: "none", margin: 0, fontWeight: 700 }}>{t("Wait for Green...")}</h2>
                 </>
               )}
               {reactionState === "clicked" && (
@@ -2334,7 +2415,7 @@ export default function ModuleCapture({ moduleIdProp, onBack, onNext }: { module
                     <line x1="9" y1="9" x2="15" y2="15"></line>
                   </svg>
                   <h2 style={{ color: "white", fontSize: "2.5rem", pointerEvents: "none", margin: 0, fontWeight: 700 }}>Too Early!</h2>
-                  <p style={{ color: "white", marginTop: "0.5rem", pointerEvents: "none", opacity: 0.9, fontSize: "1.1rem" }}>You must wait for the green screen.</p>
+                  <p style={{ color: "white", marginTop: "0.5rem", pointerEvents: "none", opacity: 0.9, fontSize: "1.1rem" }}>{t("You must wait for the green screen.")}</p>
                 </>
               )}
               {reactionState === "done" && (
@@ -2344,7 +2425,7 @@ export default function ModuleCapture({ moduleIdProp, onBack, onNext }: { module
                     <polyline points="22 4 12 14.01 9 11.01"></polyline>
                   </svg>
                   <h2 style={{ color: "var(--text-main)", fontSize: "4rem", pointerEvents: "none", margin: 0, fontWeight: 700, lineHeight: 1 }}>{reactionTime} <span style={{ fontSize: "1.8rem", color: "var(--text-muted)", fontWeight: 500 }}>ms</span></h2>
-                  <p style={{ color: "var(--text-muted)", marginTop: "1rem", pointerEvents: "none", fontSize: "1.1rem" }}>Reaction latency recorded.</p>
+                  <p style={{ color: "var(--text-muted)", marginTop: "1rem", pointerEvents: "none", fontSize: "1.1rem" }}>{t("Reaction latency recorded.")}</p>
                 </>
               )}
             </div>

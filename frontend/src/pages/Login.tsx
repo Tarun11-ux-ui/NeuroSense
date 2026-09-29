@@ -94,7 +94,7 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
       if (!res.ok) throw new Error(data.detail || 'Failed to verify OTP');
       
       if (data.access_token) {
-        localStorage.setItem('neurosense_token', data.access_token);
+        sessionStorage.setItem('neurosense_token', data.access_token);
       }
       
       onLogin();

@@ -1,4 +1,6 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { t } from "../utils/i18n";
 import {
   RadarChart,
   PolarGrid,
@@ -73,16 +75,30 @@ export default function Dashboard() {
     { subject: "Reaction", current: 90, previous: 88 },
   ];
 
+  const [latestScore, setLatestScore] = useState(78);
+  const [completedModalities, setCompletedModalities] = useState(5);
+
+  useEffect(() => {
+    import("../utils/history").then(({ getAssessmentHistory }) => {
+      const history = getAssessmentHistory();
+      if (history && history.length > 0) {
+        const lastSession = history[history.length - 1];
+        setLatestScore(lastSession.score);
+        setCompletedModalities(lastSession.modalities);
+      }
+    });
+  }, []);
+
   return (
     <div className="dashboard-page fade-in">
       {/* Header Section */}
       <div className="dashboard-page-header">
         <div>
           <h1 className="dashboard-page-title">
-            Motor Consistency Overview
+            {t("Motor Consistency Overview")}
           </h1>
           <p className="dashboard-page-subtitle">
-            Track your current assessment, personal baseline, and longitudinal trends.
+            {t("Track your current assessment, personal baseline, and longitudinal trends.")}
           </p>
         </div>
         <div className="dashboard-page-actions">
@@ -94,7 +110,7 @@ export default function Dashboard() {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
             </svg>
-            Sequential Mode
+            {t("Sequential Mode")}
           </button>
           <button
             className="btn btn-primary dashboard-primary-action"
@@ -104,7 +120,7 @@ export default function Dashboard() {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polygon points="5 3 19 12 5 21 5 3"></polygon>
             </svg>
-            Start Assessment
+            {t("Start Assessment")}
           </button>
         </div>
       </div>
@@ -113,56 +129,56 @@ export default function Dashboard() {
       <div className="dashboard-stats-grid">
         <div className="module-card dashboard-stat-card">
           <div className="dashboard-stat-label">
-            Motor Consistency Profile
+            {t("Motor Consistency Profile")}
           </div>
           <div>
             <div className="dashboard-stat-value">
-              78 <span>/ 100</span>
+              {latestScore} <span>/ 100</span>
             </div>
             <div className="dashboard-stat-helper">
-              Prototype behavioral score
+              {t("Prototype behavioral score")}
             </div>
           </div>
         </div>
 
         <div className="module-card dashboard-stat-card">
           <div className="dashboard-stat-label">
-            Assessment Quality
+            {t("Assessment Quality")}
           </div>
           <div>
             <div className="dashboard-stat-value dashboard-stat-value-success">
               91%
             </div>
             <div className="dashboard-stat-helper dashboard-stat-helper-success">
-              High-quality assessment
+              {t("High-quality assessment")}
             </div>
           </div>
         </div>
 
         <div className="module-card dashboard-stat-card">
           <div className="dashboard-stat-label">
-            Baseline Change
+            {t("Baseline Change")}
           </div>
           <div>
             <div className="dashboard-stat-value">
               -4.2%
             </div>
             <div className="dashboard-stat-helper">
-              Compared with previous session
+              {t("Compared with previous session")}
             </div>
           </div>
         </div>
 
         <div className="module-card dashboard-stat-card">
           <div className="dashboard-stat-label">
-            Completed Modalities
+            {t("Completed Modalities")}
           </div>
           <div>
             <div className="dashboard-stat-value">
-              5 <span>/ 5</span>
+              {completedModalities} <span>/ 5</span>
             </div>
             <div className="dashboard-stat-helper">
-              All modalities assessed
+              {t("All modalities assessed")}
             </div>
           </div>
         </div>
@@ -174,16 +190,16 @@ export default function Dashboard() {
         {/* Radar Chart Panel */}
         <div className="module-card dashboard-insight-card dashboard-radar-card">
           <div className="dashboard-card-heading">
-            <h3>Motor Profile Visualization</h3>
-            <p>Current session vs. previous session</p>
+            <h3>{t("Motor Profile Visualization")}</h3>
+            <p>{t("Current session vs. previous session")}</p>
           </div>
           <div className="dashboard-radar-chart">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
                 <PolarGrid stroke="var(--panel-border)" />
                 <PolarAngleAxis dataKey="subject" tick={{ fill: "var(--text-muted)", fontSize: 12 }} />
-                <Radar name="Current Session" dataKey="current" stroke="var(--primary)" fill="var(--primary)" fillOpacity={0.2} />
-                <Radar name="Previous Session" dataKey="previous" stroke="#d946ef" fill="#d946ef" fillOpacity={0.0} strokeDasharray="5 5" />
+                <Radar name={t("Current Session")} dataKey="current" stroke="var(--primary)" fill="var(--primary)" fillOpacity={0.2} />
+                <Radar name={t("Previous Session")} dataKey="previous" stroke="#d946ef" fill="#d946ef" fillOpacity={0.0} strokeDasharray="5 5" />
                 <Legend iconType="plainline" wrapperStyle={{ fontSize: "0.85rem", paddingTop: "20px" }} />
               </RadarChart>
             </ResponsiveContainer>
@@ -192,13 +208,13 @@ export default function Dashboard() {
 
         {/* Baseline Panel */}
         <div className="module-card dashboard-insight-card dashboard-baseline-card">
-          <h3 className="dashboard-baseline-title">Personal Baseline</h3>
+          <h3 className="dashboard-baseline-title">{t("Personal Baseline")}</h3>
           <p className="dashboard-baseline-description">
-            Your current motor profile compared with your previous assessment.
+            {t("Your current motor profile compared with your previous assessment.")}
           </p>
 
           <div className="dashboard-profile-row">
-            <span>Current profile</span>
+            <span>{t("Current profile")}</span>
             <strong>78 / 100</strong>
           </div>
 
@@ -211,10 +227,10 @@ export default function Dashboard() {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
               </svg>
-              -4.2% baseline deviation
+              -4.2% {t("baseline deviation")}
             </div>
             <div className="dashboard-deviation-detail">
-              Based on 3 previous sessions
+              {t("Based on 3 previous sessions")}
             </div>
           </div>
 
@@ -223,7 +239,7 @@ export default function Dashboard() {
             onClick={() => navigate("/history")}
 
           >
-            View history
+            {t("View full history")}
           </button>
         </div>
 

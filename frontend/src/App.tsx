@@ -21,6 +21,7 @@ import MobileCapture from "./pages/MobileCapture";
 import MobileCompanion from "./pages/MobileCompanion";
 import AutoLogin from "./pages/AutoLogin";
 import "./App.css";
+import { t } from "./utils/i18n";
 
 function Sidebar({ setIsAuthenticated }: { setIsAuthenticated: (val: boolean) => void }) {
   const location = useLocation();
@@ -44,44 +45,46 @@ function Sidebar({ setIsAuthenticated }: { setIsAuthenticated: (val: boolean) =>
         NeuroSense
       </div>
       <nav className="sidebar-nav">
-        <span className="sidebar-nav-label">Workspace</span>
+        <span className="sidebar-nav-label">{t("Workspace")}</span>
         <Link to="/dashboard" className={`sidebar-link ${isActive('/dashboard') ? 'active' : ''}`}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-          Dashboard
+          {t("Dashboard")}
         </Link>
         <Link to="/assessment" className={`sidebar-link ${isActive('/assessment') ? 'active' : ''}`}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-          Assessment
+          {t("Assessments")}
         </Link>
         <Link to="/history" className={`sidebar-link ${isActive('/history') ? 'active' : ''}`}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-          History
+          {t("History")}
         </Link>
         <Link to="/reports" className={`sidebar-link ${isActive('/reports') ? 'active' : ''}`}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="9" y1="15" x2="15" y2="15"></line></svg>
-          Reports
+          {t("Reports")}
         </Link>
         <Link to="/research" className={`sidebar-link ${isActive('/research') ? 'active' : ''}`}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21h6"></path><path d="M12 15v6"></path><path d="M15.4 7A6.4 6.4 0 0 0 9 1.5C5 2.5 3 6 3 9.5a7 7 0 0 0 2 5.5l1.6 1.8a2 2 0 0 1 .5 1.2v2a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-2a2 2 0 0 1 .5-1.2l1.6-1.8A7 7 0 0 0 21 9.5C21 6 19 2.5 15 1.5A6.4 6.4 0 0 0 15.4 7z"></path></svg>
-          Research
+          {t("Research")}
         </Link>
         <Link to="/settings" className={`sidebar-link ${isActive('/settings') ? 'active' : ''}`}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-          Settings
+          {t("Settings")}
         </Link>
       </nav>
       <div className="sidebar-footer">
         <button
           className="btn sidebar-sign-out"
-          style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', color: 'var(--text-muted)', border: '1px solid var(--panel-border)' }}
+          style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', padding: '0.75rem', background: 'var(--panel-bg)', color: 'var(--danger)', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '12px', fontWeight: '600', transition: 'all 0.2s ease', cursor: 'pointer' }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'; e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.4)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--panel-bg)'; e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.2)'; }}
           onClick={() => setIsAuthenticated(false)}
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" >
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
             <polyline points="16 17 21 12 16 7"></polyline>
             <line x1="21" y1="12" x2="9" y2="12"></line>
           </svg>
-          Sign Out
+          {t("Logout")}
         </button>
       </div>
 
@@ -120,16 +123,17 @@ function MainLayout({
 }
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    !!sessionStorage.getItem("neurosense_token")
+  );
 
   useEffect(() => {
-    // Clear token on start to enforce login every time
-    localStorage.removeItem("neurosense_token");
+    // Keep token on start to persist session across reloads
   }, []);
 
   const handleAuthenticationChange = (value: boolean) => {
     if (!value) {
-      localStorage.removeItem("neurosense_token");
+      sessionStorage.removeItem("neurosense_token");
     } else {
       // Token is already set by Login.tsx or AutoLogin.tsx
     }

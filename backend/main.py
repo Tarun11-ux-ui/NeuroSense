@@ -117,6 +117,7 @@ class OTPVerify(BaseModel):
 
 class PredictRequest(BaseModel):
     patient_id: str = None
+    language: str = "en"
     keystroke: list[dict] = None
     mouse_dfl: list[dict] = None
     mouse_balabit: list[dict] = None
@@ -491,12 +492,19 @@ def predict_endpoint(request: PredictRequest, current_user: str = Depends(get_cu
                     "No matching clinical guidance was found for the detected "
                     "contributors. Review the modality findings with a qualified clinician."
                 )
+            lang_instruction = "English"
+            if request.language == "es":
+                lang_instruction = "Spanish"
+            elif request.language == "fr":
+                lang_instruction = "French"
+
             prompt = f"""Act as an expert neurologist. Based on the following patient biometric anomalies and clinical guidelines, write a highly professional, detailed 1-2 paragraph clinical report.
 
 Anomalies Detected: {', '.join(contributors)}
 Clinical Guidelines (Context): {context_str}
 
-Write the report in a formal medical tone, summarizing the implications of these anomalies:"""
+Write the report in a formal medical tone, summarizing the implications of these anomalies. 
+IMPORTANT: Your ENTIRE response MUST be written in {lang_instruction}."""
 
             if os.getenv("ENABLE_OLLAMA_REPORT", "true").lower() == "true":
                 tags = requests.get(f"{ollama_host}/api/tags", timeout=5).json()
@@ -546,7 +554,7 @@ Write the report in a formal medical tone, summarizing the implications of these
         if request.facial: modules_used.append("facial")
         if request.reaction: modules_used.append("reaction")
         
-        overall_score = result.get("overall_score", 0.0)
+        overall_score = result.get("fusion", {}).get("fused_risk_score", 0.0) * 100
         
         cursor.execute('''
             INSERT INTO assessments (patient_id, timestamp, modules_used, overall_score, result_json)

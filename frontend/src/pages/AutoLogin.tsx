@@ -10,7 +10,7 @@ export default function AutoLogin({ onLogin }: { onLogin: () => void }) {
     const token = params.get('token');
     
     if (token) {
-      localStorage.setItem('neurosense_token', token);
+      sessionStorage.setItem('neurosense_token', token);
       onLogin(); // updates parent state
       navigate('/dashboard', { replace: true });
     } else {

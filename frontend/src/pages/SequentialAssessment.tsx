@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ModuleCapture from "./ModuleCapture";
+import { t } from "../utils/i18n";
 
 export default function SequentialAssessment() {
   const navigate = useNavigate();
@@ -11,15 +12,29 @@ export default function SequentialAssessment() {
   const [results, setResults] = useState<any[]>([]);
 
   const stepConfig = [
-    { id: "keystroke", title: "Typing Assessment", desc: "Analyze keystroke dynamics and rhythm patterns.", time: "Est. 60-90 seconds", req: "Physical keyboard required", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>, btnText: "Start Typing Test", instruction: "Type the displayed passage naturally and continuously, without deliberate corrections." },
-    { id: "mouse_dfl", title: "Mouse Tracking (DFL)", desc: "Analyze cursor movement and precision.", time: "Est. 45-60 seconds", req: "Standard mouse or trackpad", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>, btnText: "Start Mouse Test", instruction: "Follow the targets on screen as quickly and accurately as possible." },
-    { id: "mouse_balabit", title: "Mouse Tracking (Balabit)", desc: "Analyze point-and-click rapid interactions.", time: "Est. 30-45 seconds", req: "Standard mouse or trackpad", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="12" cy="12" r="3"></circle></svg>, btnText: "Start Balabit Test", instruction: "Click rapidly between the generated on-screen targets." },
-    { id: "spiral", title: "Spiral Drawing", desc: "Analyze hand tremors through drawing tasks.", time: "Est. 30-60 seconds", req: "Mouse, stylus or touchscreen", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 100-16 8 8 0 000 16z"></path><path d="M12 18a6 6 0 110-12 6 6 0 010 12zm0-2a4 4 0 100-8 4 4 0 000 8z"></path></svg>, btnText: "Start Spiral Test", instruction: "Draw the spiral shown on screen, trying to stay within the lines." },
-    { id: "voice", title: "Voice Analysis", desc: "Assess phonation and speech stability.", time: "Est. 20-40 seconds", req: "Microphone required", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>, btnText: "Start Voice Test", instruction: "Read the displayed sentence out loud clearly at a normal pace." },
-    { id: "gait", title: "Gait Evaluation", desc: "Evaluate balance and walking rhythm.", time: "Est. 1-2 minutes", req: "Camera and clear space required", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 16v-2.38C4 11.5 5.28 10 7 10h1a2 2 0 0 0 2-2V6a2 2 0 0 1 2-2h1.33c1.72 0 3.23 1.09 3.82 2.7l1.55 4.14"></path><path d="M13 14l-2 3"></path><path d="M16 16l2-3"></path></svg>, btnText: "Start Gait Test", instruction: "Ensure your full body is visible to the camera, walk straight away, then turn around and walk back." },
-    { id: "facial", title: "Facial Expression", desc: "Analyze micro-expressions and blink rates.", time: "Est. 30-45 seconds", req: "Camera required", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>, btnText: "Start Facial Test", instruction: "Look into the camera and follow the reading prompt." },
-    { id: "reaction", title: "Reaction Time", desc: "Measure cognitive and motor reaction delay.", time: "Est. 30-60 seconds", req: "Mouse or touchscreen", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>, btnText: "Start Reaction Test", instruction: "Click or tap the screen exactly when the color changes." }
+    { id: "keystroke", title: t("Typing Test"), desc: t("Analyze keystroke dynamics and rhythm patterns."), time: t("Est. 60-90 seconds"), req: t("Physical keyboard required"), icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>, btnText: t("Start Typing Test"), instruction: t("Type the displayed passage naturally and continuously, without deliberate corrections.") },
+    { id: "mouse_dfl", title: t("Mouse (DFL)"), desc: t("Analyze cursor movement and precision."), time: t("Est. 45-60 seconds"), req: t("Standard mouse or trackpad"), icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>, btnText: t("Start Mouse Test"), instruction: t("Follow the targets on screen as quickly and accurately as possible.") },
+    { id: "mouse_balabit", title: t("Mouse (Balabit)"), desc: t("Analyze point-and-click rapid interactions."), time: t("Est. 30-45 seconds"), req: t("Standard mouse or trackpad"), icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="12" cy="12" r="3"></circle></svg>, btnText: t("Start Balabit Test"), instruction: t("Click rapidly between the generated on-screen targets.") },
+    { id: "spiral", title: t("Spiral Test"), desc: t("Analyze hand tremors through drawing tasks."), time: t("Est. 30-60 seconds"), req: t("Mouse, stylus or touchscreen"), icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 100-16 8 8 0 000 16z"></path><path d="M12 18a6 6 0 110-12 6 6 0 010 12zm0-2a4 4 0 100-8 4 4 0 000 8z"></path></svg>, btnText: t("Start Spiral Test"), instruction: t("Draw the spiral shown on screen, trying to stay within the lines.") },
+    { id: "voice", title: t("Voice Test"), desc: t("Assess phonation and speech stability."), time: t("Est. 20-40 seconds"), req: t("Microphone required"), icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>, btnText: t("Start Voice Test"), instruction: t("Read the displayed sentence out loud clearly at a normal pace.") },
+    { id: "gait", title: t("Gait Test"), desc: t("Evaluate balance and walking rhythm."), time: t("Est. 1-2 minutes"), req: t("Camera and clear space required"), icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 16v-2.38C4 11.5 5.28 10 7 10h1a2 2 0 0 0 2-2V6a2 2 0 0 1 2-2h1.33c1.72 0 3.23 1.09 3.82 2.7l1.55 4.14"></path><path d="M13 14l-2 3"></path><path d="M16 16l2-3"></path></svg>, btnText: t("Start Gait Test"), instruction: t("Ensure your full body is visible to the camera, walk straight away, then turn around and walk back.") },
+    { id: "facial", title: t("Facial Test"), desc: t("Analyze micro-expressions and blink rates."), time: t("Est. 30-45 seconds"), req: t("Camera required"), icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>, btnText: t("Start Facial Test"), instruction: t("Look into the camera and follow the reading prompt.") },
+    { id: "reaction", title: t("Reaction Test"), desc: t("Measure cognitive and motor reaction delay."), time: t("Est. 30-60 seconds"), req: t("Mouse or touchscreen"), icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>, btnText: t("Start Reaction Test"), instruction: t("Click or tap the screen exactly when the color changes.") }
   ];
+
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        if (currentIndex === -1) {
+          setCurrentIndex(0);
+        } else if (currentIndex === stepConfig.length) {
+          navigate("/dashboard");
+        }
+      }
+    };
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, [currentIndex, stepConfig.length, navigate]);
 
   const handleNext = (result: any) => {
     setResults((prev) => [...prev, { moduleId: stepConfig[currentIndex].id, result }]);
@@ -78,7 +93,25 @@ export default function SequentialAssessment() {
   }
 
   if (currentIndex === stepConfig.length) {
-    const getCumulativeScore = () => 85; // Mock score
+    const getCumulativeScore = () => {
+      if (results.length === 0) return 0;
+      let totalRisk = 0;
+      results.forEach(r => {
+        const risk = r.result?.result?.fusion?.fused_risk_score || 0;
+        totalRisk += risk;
+      });
+      const avgRisk = totalRisk / results.length;
+      // High risk (e.g. 0.8) means low consistency (e.g. 20)
+      return Math.round((1.0 - avgRisk) * 100);
+    };
+
+    // Save to history once when reaching the end screen
+    if (!results.some(r => r.savedToHistory)) {
+      import("../utils/history").then(({ saveAssessmentToHistory }) => {
+        saveAssessmentToHistory("sequential", getCumulativeScore(), results.length);
+        setResults(prev => prev.map(r => ({...r, savedToHistory: true})));
+      });
+    }
 
     return (
       <div className="fade-in" style={{ paddingBottom: "3rem", width: "100%" }}>
@@ -87,10 +120,10 @@ export default function SequentialAssessment() {
             <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
           </div>
           <h1 style={{ fontSize: "3.5rem", fontWeight: 800, color: "var(--text-main)", margin: "0 0 1rem 0", letterSpacing: "-1px" }}>
-            Assessment Complete
+            {t("Assessment Complete")}
           </h1>
           <p style={{ color: "var(--text-muted)", margin: "0 auto", fontSize: "1.2rem", maxWidth: "600px", lineHeight: 1.6 }}>
-            You have successfully completed all 8 motor and behavioral modules. Your data has been securely processed and aggregated.
+            {t("You have successfully completed all 8 motor and behavioral modules. Your data has been securely processed and aggregated.")}
           </p>
         </div>
 
@@ -99,7 +132,7 @@ export default function SequentialAssessment() {
           <div className="module-card" style={{ padding: "3rem", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)", border: "1px solid rgba(139, 92, 246, 0.2)", position: "relative", overflow: "hidden" }}>
             <div style={{ position: "absolute", top: "-50px", right: "-50px", width: "200px", height: "200px", background: "radial-gradient(circle, rgba(139,92,246,0.1) 0%, rgba(255,255,255,0) 70%)", borderRadius: "50%" }}></div>
             <h3 style={{ fontSize: "1.1rem", color: "var(--primary)", textTransform: "uppercase", letterSpacing: "1.5px", marginBottom: "1.5rem", fontWeight: 700 }}>
-              Composite Motor Score
+              {t("Composite Motor Score")}
             </h3>
             <div style={{ position: "relative", width: "220px", height: "220px", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "50%", background: "conic-gradient(var(--primary) 85%, var(--panel-border) 85%)", boxShadow: "0 10px 30px rgba(139, 92, 246, 0.15)" }}>
               <div style={{ width: "190px", height: "190px", background: "white", borderRadius: "50%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
@@ -108,14 +141,14 @@ export default function SequentialAssessment() {
               </div>
             </div>
             <p style={{ color: "var(--text-main)", fontSize: "1.05rem", textAlign: "center", marginTop: "2.5rem", lineHeight: 1.6, maxWidth: "350px" }}>
-              Your overall behavioral consistency is <strong style={{ color: "#10b981" }}>excellent</strong>. No significant anomalies were detected across the multiple modalities.
+              {t("Your overall behavioral consistency is excellent. No significant anomalies were detected across the multiple modalities.")}
             </p>
             <button 
               className="btn btn-primary"
               onClick={() => navigate("/dashboard")}
               style={{ padding: "1rem 2.5rem", fontSize: "1.1rem", marginTop: "2rem", width: "100%" }}
             >
-              Return to Dashboard
+              {t("Return to Dashboard")}
             </button>
           </div>
 
@@ -123,10 +156,10 @@ export default function SequentialAssessment() {
           <div className="module-card" style={{ padding: "2.5rem", background: "#ffffff" }}>
             <h3 style={{ fontSize: "1.25rem", fontWeight: 600, color: "var(--text-main)", marginBottom: "2rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-              Module Breakdown
+              {t("Module Breakdown")}
             </h3>
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              {stepConfig.map((config, i) => {
+              {stepConfig.map((config) => {
                 const isCompleted = results.some(r => r.moduleId === config.id);
                 return (
                   <div key={config.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "1rem", borderRadius: "10px", background: isCompleted ? "rgba(16, 185, 129, 0.05)" : "var(--bg-main)", border: `1px solid ${isCompleted ? "rgba(16, 185, 129, 0.2)" : "var(--panel-border)"}` }}>
