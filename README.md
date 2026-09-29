@@ -1,85 +1,144 @@
-# NeuroSense
+<div align="center">
+  <img src="https://via.placeholder.com/150x150/8b5cf6/ffffff?text=N" alt="NeuroSense Logo" width="120" />
 
-NeuroSense is a secure digital motor assessment platform designed to capture, analyze, and evaluate multimodal neuromotor consistency. By leveraging standard hardware (keyboard, mouse, microphone, and camera), NeuroSense provides an accessible way to monitor digital biomarkers associated with neuromotor functions.
+  <h1>NeuroSense</h1>
+  <p><strong>Secure Digital Motor & Cognitive Assessment Platform</strong></p>
 
-## Features
+  <p>
+    <a href="#features">Features</a> •
+    <a href="#clinical-modalities">Modalities</a> •
+    <a href="#architecture">Architecture</a> •
+    <a href="#getting-started">Getting Started</a> •
+    <a href="#privacy">Privacy</a>
+  </p>
+</div>
 
-NeuroSense evaluates clinical biomarkers through a comprehensive suite of 8 distinct assessment modules:
+---
 
-*   **Keystroke Dynamics:** Analyzes typing rhythm and patterns to assess fine motor consistency.
-*   **Mouse Tracking (DFL & Balabit):** Evaluates cursor control, rapid point-and-click precision, and interactive targeting to measure continuous motor coordination.
-*   **Spiral Drawing:** Uses canvas-based input to detect micro-tremors and measure hand stability.
-*   **Voice Analysis:** Records and analyzes phonation and speech stability (requires microphone).
-*   **Gait Pattern:** Evaluates balance and walking rhythm through video pose estimation (requires camera).
-*   **Facial Expression:** Measures facial movement consistency and blink timing (requires camera).
-*   **Reaction Time:** Measures cognitive and motor reaction delay using visual cues.
+## 📌 Overview
 
-### User Interface
+**NeuroSense** is a comprehensive digital biomarker platform designed to capture, analyze, and evaluate multimodal neuromotor consistency. Utilizing standard consumer hardware (keyboard, mouse, microphone, and camera), NeuroSense provides an accessible, non-invasive method to monitor subtle digital biomarkers often associated with neuromotor and cognitive functions.
 
-*   **Dashboard:** A comprehensive overview of past assessments, aggregated consistency scores, and individual module performance radar charts.
-*   **Sequential Assessment Flow:** A guided, step-by-step evaluation mode that walks users through all 8 modalities seamlessly.
-*   **Clinical Reports:** Generates professional, printable clinical records summarizing data quality, interpretations, and longitudinal baseline comparisons.
+By capturing real-time telemetry data across eight distinct modalities, NeuroSense delivers a synthesized, explainable assessment—supporting longitudinal tracking of motor patterns, micro-tremors, and behavioral latency.
 
-## Tech Stack
+---
 
-*   **Frontend:** React, TypeScript, Vite
-*   **Backend:** Python, FastAPI
-*   **Machine Learning / Data Processing:** Pandas, NumPy, and custom heuristic algorithms in the `ml` module.
+## ✨ Features
 
-## Getting Started
+- **📊 Centralized Dashboard:** A comprehensive UI featuring aggregated composite scores, radar charts for modal breakdown, and longitudinal history tracking.
+- **🔄 Multi-Modal Assessments:** Eight specific cognitive and motor modules carefully tuned to capture unique kinematic profiles.
+- **📈 Sequential Flow:** A guided step-by-step evaluation mode that walks users through all assessment modalities seamlessly without disruption.
+- **📋 Clinical Reports:** Professional, exportable reports (PDF/JSON) summarizing data quality, interpretations, and deviations from baselines.
+- **🧠 Explainable AI Engine:** Fusion algorithms combine telemetry from multiple inputs to provide clear, actionable insights into motor anomalies rather than black-box scores.
+
+---
+
+## 🔬 Clinical Modalities
+
+NeuroSense features eight evidence-based data capture modalities:
+
+1. ⌨️ **Keystroke Dynamics:** Analyzes typing rhythm, dwell times, and flight patterns to assess fine motor consistency.
+2. 🖱️ **Mouse Tracking (DFL):** Evaluates continuous cursor control, acceleration curves, and targeting to measure gross motor coordination.
+3. 🎯 **Mouse Tracking (Balabit):** Evaluates rapid point-and-click precision and spatial awareness during interactive targeting tasks.
+4. 🌀 **Spiral Drawing:** Analyzes digital canvas input to detect kinematic micro-tremors and measure continuous hand stability.
+5. 🎙️ **Voice Analysis:** Records and analyzes phonation parameters, speech stability, and vocal jitter (requires microphone).
+6. 🚶 **Gait Pattern:** Evaluates balance, stride timing, and walking rhythm using spatial video pose estimation (requires camera).
+7. 👁️ **Facial Expression:** Measures facial movement consistency, blink latency (bradykinesia detection), and expression (requires camera).
+8. ⏱️ **Reaction Time:** Measures pure cognitive-to-motor reaction delay through visual cue stimulation.
+
+---
+
+## 🏗️ Architecture
+
+The project is structured as a decoupled web application:
+
+- **Frontend (`/frontend`):** Built with React, TypeScript, and Vite. Implements the interactive UI, local data capture engines (mouse tracking, canvas drawing, keystroke logging), and routing.
+- **Backend (`/backend`):** A high-performance Python FastAPI server. It provides the REST API endpoints (`/api/predict`) that consume telemetry and return aggregated scoring.
+- **Machine Learning (`/ml`):** Python modules containing feature extraction logic (`ml.features`) and heuristic/predictive models (`ml.models`) for scoring the incoming telemetry arrays.
+
+---
+
+## 🚀 Getting Started
+
+Follow these steps to set up and run NeuroSense locally for development or demonstration.
 
 ### Prerequisites
+- **Node.js** (v16.0+ recommended)
+- **Python** (3.9+ recommended)
 
-*   **Node.js** (v16 or higher recommended)
-*   **Python** (3.9 or higher recommended)
+### 1. Backend Setup
 
-### Backend Setup
+Navigate to the project root and install the required machine learning and server dependencies:
 
-1. Navigate to the project root directory.
-2. It's recommended to create a virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-   ```
-3. Install the required Python dependencies:
-   ```bash
-   pip install -r requirements-ml.txt
-   ```
-4. Start the FastAPI backend server (assuming the main application is in `backend/main.py`):
-   ```bash
-   cd backend
-   uvicorn main:app --reload
-   ```
-   The backend will be available at `http://localhost:8000`.
+```bash
+# 1. Create a virtual environment
+python -m venv venv
 
-### Frontend Setup
+# 2. Activate the virtual environment
+# On Windows:
+venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
 
-1. Navigate to the `frontend` directory:
-   ```bash
-   cd frontend
-   ```
-2. Install the Node dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the Vite development server:
-   ```bash
-   npm run dev
-   ```
-4. Open your browser and navigate to the URL provided by Vite (typically `http://localhost:3000` or `http://localhost:5173`).
+# 3. Install dependencies
+pip install -r requirements-ml.txt
 
-## Project Structure
+# 4. Start the FastAPI server
+cd backend
+uvicorn main:app --reload
+```
+*The backend server will start at `http://localhost:8000`.*
 
-*   `frontend/`: Contains the React UI, including the Dashboard, Sequential Assessment flows, and Clinical Reporting views.
-*   `backend/`: Contains the FastAPI server and endpoints (e.g., `/api/predict`).
-*   `ml/`: Contains the machine learning models and feature extraction logic for processing telemetry data from the various assessment modules.
-*   `datasets/`: Used for storing or referencing training/validation data.
-*   `results/`: Directory for outputting analysis results or model artifacts.
+### 2. Frontend Setup
 
-## Data Privacy & Security
+In a new terminal window, navigate to the frontend directory:
 
-NeuroSense is designed to handle sensitive biomarker telemetry. All local processing focuses on extracting metadata (like movement speed, jitter, and timings) rather than storing raw identifiable media where possible. Clinical reports are generated locally in the browser and can be exported by the user.
+```bash
+# 1. Navigate to the frontend
+cd frontend
 
-## License
+# 2. Install Node dependencies
+npm install
 
-*(Add License Information Here)*
+# 3. Start the Vite development server
+npm run dev
+```
+*The web interface will typically be available at `http://localhost:3000` or `http://localhost:5173`. Check your terminal output for the exact local address.*
+
+---
+
+## 📂 Project Structure
+
+```text
+NeuroSense/
+├── backend/                  # FastAPI server and API endpoints
+│   ├── main.py               # Application entry point
+│   └── clinical_knowledge.json
+├── frontend/                 # React UI application
+│   ├── src/
+│   │   ├── components/       # Reusable UI components
+│   │   ├── pages/            # Core views (Dashboard, SequentialAssessment, Reports)
+│   │   └── App.tsx           # Router configuration
+│   └── package.json
+├── ml/                       # Machine Learning & Telemetry Processing
+│   ├── features/             # Feature extraction functions
+│   ├── inference/            # Prediction endpoints
+│   └── models/               # Heuristic scoring and analysis models
+├── datasets/                 # Pre-recorded baseline data for testing
+├── results/                  # Analytics output logs
+└── README.md                 # Project documentation
+```
+
+---
+
+## 🛡️ Data Privacy & Security
+
+NeuroSense is designed to handle sensitive clinical telemetry responsibly:
+- **Local Processing:** The frontend collects continuous spatial and temporal data. Identifiable raw media (e.g., video feeds, audio recordings) is processed to extract mathematical features (like movement speed, jitter, and timings) locally where possible, prioritizing data minimization.
+- **Client-Side Export:** Assessment records and reports can be exported and downloaded entirely within the user's browser for secure local archiving.
+
+---
+
+## 📄 License
+
+*This project is proprietary. Ensure you have the appropriate permissions before deploying or modifying the source code.*
