@@ -5,6 +5,8 @@ import pandas as pd
 import io
 import json
 import sqlite3
+import psycopg2
+import psycopg2.errors
 import random
 import datetime
 import os
@@ -55,10 +57,47 @@ app.add_middleware(
 
 # Initialize SQLite DB
 DB_PATH = Path(__file__).parent / "neurosense.db"
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+class PostgresCursorWrapper:
+    def __init__(self, cursor):
+        self.cursor = cursor
+        
+    def execute(self, query, params=()):
+        query = query.replace('?', '%s')
+        return self.cursor.execute(query, params)
+        
+    def fetchone(self): return self.cursor.fetchone()
+    def fetchall(self): return self.cursor.fetchall()
+    def close(self): self.cursor.close()
+    
+    @property
+    def lastrowid(self):
+        return getattr(self.cursor, 'lastrowid', None)
+
+class PostgresConnWrapper:
+    def __init__(self, conn):
+        self.conn = conn
+    def cursor(self):
+        return PostgresCursorWrapper(self.conn.cursor())
+    def commit(self): self.conn.commit()
+    def close(self): self.conn.close()
+
+def get_db_connection():
+    if DATABASE_URL:
+        conn = psycopg2.connect(DATABASE_URL)
+        return PostgresConnWrapper(conn)
+    else:
+        return sqlite3.connect(DB_PATH)
+
 
 def init_db():
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     cursor = conn.cursor()
+    
+    # Supabase/Postgres uses SERIAL instead of AUTOINCREMENT
+    auto_inc = "SERIAL PRIMARY KEY" if DATABASE_URL else "INTEGER PRIMARY KEY AUTOINCREMENT"
+
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
             email TEXT PRIMARY KEY,
@@ -69,7 +108,7 @@ def init_db():
     ''')
     try:
         cursor.execute("ALTER TABLE users ADD COLUMN password_hash TEXT")
-    except sqlite3.OperationalError:
+    except (sqlite3.OperationalError, psycopg2.errors.DuplicateColumn, psycopg2.errors.UndefinedColumn, psycopg2.ProgrammingError, psycopg2.errors.InFailedSqlTransaction):
         pass
         
     cursor.execute('''
@@ -83,9 +122,9 @@ def init_db():
         )
     ''')
     
-    cursor.execute('''
+    cursor.execute(f'''
         CREATE TABLE IF NOT EXISTS assessments (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id {auto_inc},
             patient_id TEXT,
             timestamp TEXT,
             modules_used TEXT,
@@ -95,11 +134,11 @@ def init_db():
     ''')
     try:
         cursor.execute("ALTER TABLE assessments ADD COLUMN patient_id TEXT")
-    except sqlite3.OperationalError:
+    except (sqlite3.OperationalError, psycopg2.errors.DuplicateColumn, psycopg2.errors.UndefinedColumn, psycopg2.ProgrammingError, psycopg2.errors.InFailedSqlTransaction):
         pass
     try:
         cursor.execute("ALTER TABLE assessments ADD COLUMN modules_used TEXT")
-    except sqlite3.OperationalError:
+    except (sqlite3.OperationalError, psycopg2.errors.DuplicateColumn, psycopg2.errors.UndefinedColumn, psycopg2.ProgrammingError, psycopg2.errors.InFailedSqlTransaction):
         pass
     conn.commit()
     conn.close()
@@ -210,7 +249,7 @@ def signup(req: SignupRequest):
     
     hashed_password = bcrypt.hashpw(req.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
     
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     cursor = conn.cursor()
     
     try:
@@ -229,7 +268,7 @@ def request_otp(req: OTPRequest):
     if not email or not req.password:
         raise HTTPException(status_code=400, detail="Invalid email or password")
     
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     cursor = conn.cursor()
     
     # Verify user and password
@@ -311,7 +350,7 @@ def verify_otp(req: OTPVerify):
     email = req.email.strip().lower()
     otp_code = req.otp.strip()
     
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute('SELECT otp_code, otp_expiry FROM users WHERE email = ?', (email,))
     row = cursor.fetchone()
@@ -461,7 +500,7 @@ def predict_endpoint(request: PredictRequest, current_user: str = Depends(get_cu
         result["fusion"]["data_quality"] = data_quality
         
         # Save to database
-        conn = sqlite3.connect(DB_PATH)
+        conn = get_db_connection()
         cursor = conn.cursor()
         
         # Retrieval is local; generation is optional when the configured Ollama model exists.
@@ -642,7 +681,7 @@ def share_report(req: ShareReportRequest):
 
 @app.get("/api/stats")
 def get_stats():
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute('SELECT COUNT(*) FROM assessments')
     count = cursor.fetchone()[0]
@@ -661,7 +700,7 @@ def get_stats():
 
 @app.post("/api/patients")
 def create_patient(req: PatientCreate):
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     cursor = conn.cursor()
     patient_id = f"PT-{random.randint(1000, 9999)}"
     cursor.execute('''
@@ -674,7 +713,7 @@ def create_patient(req: PatientCreate):
 
 @app.get("/api/patients")
 def get_patients():
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute('SELECT id, name, age, gender, notes, created_at FROM patients ORDER BY created_at DESC')
     rows = cursor.fetchall()
@@ -698,7 +737,7 @@ def get_patients():
 
 @app.get("/api/patients/{patient_id}/history")
 def get_patient_history(patient_id: str):
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute('''
         SELECT timestamp, overall_score, result_json 
@@ -749,7 +788,7 @@ def get_patient_history(patient_id: str):
 
 @app.get("/api/patients/{patient_id}/fhir")
 def get_patient_fhir(patient_id: str):
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute('SELECT name, age, gender FROM patients WHERE id = ?', (patient_id,))
     patient_row = cursor.fetchone()

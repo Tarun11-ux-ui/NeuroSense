@@ -13,3 +13,5 @@ numpy
 scikit-learn==1.7.2
 joblib
 xgboost
+
+psycopg2-binary==2.9.9
