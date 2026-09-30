@@ -58,6 +58,8 @@ app.add_middleware(
 # Initialize SQLite DB
 DB_PATH = Path(__file__).parent / "neurosense.db"
 DATABASE_URL = os.getenv("DATABASE_URL")
+if DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.strip()
 
 class PostgresCursorWrapper:
     def __init__(self, cursor):
