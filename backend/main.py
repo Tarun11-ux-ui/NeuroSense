@@ -511,7 +511,8 @@ IMPORTANT: Do not use markdown formatting like **bold** or # headers, use plain 
 Your ENTIRE response MUST be written in {lang_instruction}."""
 
             if os.getenv("ENABLE_OLLAMA_REPORT", "true").lower() == "true":
-                tags = requests.get(f"{ollama_host}/api/tags", timeout=5).json()
+                headers = {"Bypass-Tunnel-Reminder": "true"}
+                tags = requests.get(f"{ollama_host}/api/tags", headers=headers, timeout=5).json()
                 installed_models = {
                     item.get("name", item.get("model", ""))
                     for item in tags.get("models", [])
@@ -527,7 +528,7 @@ Your ENTIRE response MUST be written in {lang_instruction}."""
                         "model": selected_model,
                         "prompt": prompt,
                         "stream": False
-                    }, timeout=120)
+                    }, headers=headers, timeout=120)
                     if response.status_code == 200:
                         generated_report = response.json().get("response", "").strip()
                         if generated_report:
