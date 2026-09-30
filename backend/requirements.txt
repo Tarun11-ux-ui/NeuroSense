@@ -10,3 +10,6 @@ python-dotenv
 PyJWT
 pandas
 numpy
+scikit-learn
+joblib
+xgboost
