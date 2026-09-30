@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config";
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { MOCK_VOICE, MOCK_GAIT } from '../types';
@@ -16,7 +17,7 @@ export default function MobileCapture() {
         data: module === 'voice' ? MOCK_VOICE : MOCK_GAIT
       };
 
-      fetch(`/api/mobile/${sessionId}`, {
+      fetch(`${API_BASE_URL}/api/mobile/${sessionId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config";
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { MOCK_VOICE, MOCK_GAIT } from '../types';
@@ -10,7 +11,7 @@ export default function MobileCompanion() {
   useEffect(() => {
     const poll = setInterval(async () => {
       try {
-        const res = await fetch(`/api/companion/${sessionId}/command`);
+        const res = await fetch(`${API_BASE_URL}/api/companion/${sessionId}/command`);
         if (res.ok) {
           const data = await res.json();
           if (data.command !== command && data.command !== 'idle') {
@@ -35,7 +36,7 @@ export default function MobileCompanion() {
         data: moduleType === 'voice' ? MOCK_VOICE : MOCK_GAIT
       };
 
-      fetch(`/api/mobile/${sessionId}`, {
+      fetch(`${API_BASE_URL}/api/mobile/${sessionId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -45,7 +46,7 @@ export default function MobileCompanion() {
         if (data.status === 'success') {
           setStatus('success');
           // Reset command to idle so we can record again if needed
-          fetch(`/api/companion/${sessionId}/command`, {
+          fetch(`${API_BASE_URL}/api/companion/${sessionId}/command`, {
              method: 'POST',
              headers: { 'Content-Type': 'application/json' },
              body: JSON.stringify({ command: 'idle' })

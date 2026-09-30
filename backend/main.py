@@ -20,7 +20,7 @@ import uuid
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi import Depends
 
-SECRET_KEY = "NEUROSENSE_SECRET_MVP_KEY_X82"
+SECRET_KEY = os.getenv("SECRET_KEY", "NEUROSENSE_SECRET_MVP_KEY_X82")
 ALGORITHM = "HS256"
 security = HTTPBearer()
 
@@ -42,9 +42,12 @@ load_dotenv(Path(__file__).parent / ".env")
 
 app = FastAPI(title="NeuroSense API")
 
+origins_env = os.getenv("ALLOWED_ORIGINS", "*")
+allowed_origins = [origin.strip() for origin in origins_env.split(",")] if origins_env != "*" else ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -498,13 +501,14 @@ def predict_endpoint(request: PredictRequest, current_user: str = Depends(get_cu
             elif request.language == "fr":
                 lang_instruction = "French"
 
-            prompt = f"""Act as an expert neurologist. Based on the following patient biometric anomalies and clinical guidelines, write a highly professional, detailed 1-2 paragraph clinical report.
+            prompt = f"""Act as a friendly, empathetic medical assistant. Based on the following biometric anomalies and clinical guidelines, write an easy-to-understand, encouraging report for the patient.
 
 Anomalies Detected: {', '.join(contributors)}
 Clinical Guidelines (Context): {context_str}
 
-Write the report in a formal medical tone, summarizing the implications of these anomalies. 
-IMPORTANT: Your ENTIRE response MUST be written in {lang_instruction}."""
+Write the report directly to the patient in a supportive tone. Use simple language and short paragraphs. You may use bullet points (using a dash '-') if helpful. 
+IMPORTANT: Do not use markdown formatting like **bold** or # headers, use plain text only. Always remind them to consult a doctor. 
+Your ENTIRE response MUST be written in {lang_instruction}."""
 
             if os.getenv("ENABLE_OLLAMA_REPORT", "true").lower() == "true":
                 tags = requests.get(f"{ollama_host}/api/tags", timeout=5).json()

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -87,7 +88,7 @@ export default function RemoteCapture() {
     streamRef.current = null;
     setRecording(false);
     setMessage("Sending phone telemetry to the desktop...");
-    await fetch(`/api/remote-sessions/${sessionId}/telemetry`, {
+    await fetch(`${API_BASE_URL}/api/remote-sessions/${sessionId}/telemetry`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ telemetry: telemetryRef.current }),
@@ -107,7 +108,7 @@ export default function RemoteCapture() {
         });
         const form = new FormData();
         form.append("audio", audio, "phone-recording.webm");
-        await fetch(`/api/remote-sessions/${sessionId}/audio`, {
+        await fetch(`${API_BASE_URL}/api/remote-sessions/${sessionId}/audio`, {
           method: "POST",
           body: form,
         });

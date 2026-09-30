@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { MODULES } from "./Dashboard";
@@ -50,7 +51,7 @@ export default function ModuleCapture({ moduleIdProp, onBack, onNext }: { module
   useEffect(() => {
     if (!remoteSessionId) return;
     const poll = window.setInterval(async () => {
-      const response = await fetch(`/api/mobile/${remoteSessionId}`);
+      const response = await fetch(`${API_BASE_URL}/api/mobile/${remoteSessionId}`);
       if (!response.ok) return;
       const data = await response.json();
       if (data.status === "ready") {
@@ -937,7 +938,7 @@ export default function ModuleCapture({ moduleIdProp, onBack, onNext }: { module
 
     try {
       const token = sessionStorage.getItem("neurosense_token") || "";
-      const res = await fetch("/api/predict", {
+      const res = await fetch(`${API_BASE_URL}/api/predict`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -1038,7 +1039,7 @@ export default function ModuleCapture({ moduleIdProp, onBack, onNext }: { module
     setIsEmailing(true);
     setEmailStatus(null);
     try {
-      const res = await fetch("/api/share-report", {
+      const res = await fetch(`${API_BASE_URL}/api/share-report`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
