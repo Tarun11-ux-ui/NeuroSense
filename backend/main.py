@@ -111,10 +111,13 @@ def init_db():
             otp_expiry TEXT
         )
     ''')
-    try:
-        cursor.execute("ALTER TABLE users ADD COLUMN password_hash TEXT")
-    except (sqlite3.OperationalError, psycopg2.errors.DuplicateColumn, psycopg2.errors.UndefinedColumn, psycopg2.ProgrammingError, psycopg2.errors.InFailedSqlTransaction):
-        if hasattr(conn, 'rollback'): conn.rollback()
+    conn.commit()
+    
+    if not DATABASE_URL:
+        try:
+            cursor.execute("ALTER TABLE users ADD COLUMN password_hash TEXT")
+        except sqlite3.OperationalError:
+            pass
         
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS patients (
@@ -126,6 +129,7 @@ def init_db():
             created_at TEXT
         )
     ''')
+    conn.commit()
     
     cursor.execute(f'''
         CREATE TABLE IF NOT EXISTS assessments (
@@ -137,14 +141,17 @@ def init_db():
             result_json TEXT
         )
     ''')
-    try:
-        cursor.execute("ALTER TABLE assessments ADD COLUMN patient_id TEXT")
-    except (sqlite3.OperationalError, psycopg2.errors.DuplicateColumn, psycopg2.errors.UndefinedColumn, psycopg2.ProgrammingError, psycopg2.errors.InFailedSqlTransaction):
-        if hasattr(conn, 'rollback'): conn.rollback()
-    try:
-        cursor.execute("ALTER TABLE assessments ADD COLUMN modules_used TEXT")
-    except (sqlite3.OperationalError, psycopg2.errors.DuplicateColumn, psycopg2.errors.UndefinedColumn, psycopg2.ProgrammingError, psycopg2.errors.InFailedSqlTransaction):
-        if hasattr(conn, 'rollback'): conn.rollback()
+    conn.commit()
+    
+    if not DATABASE_URL:
+        try:
+            cursor.execute("ALTER TABLE assessments ADD COLUMN patient_id TEXT")
+        except sqlite3.OperationalError:
+            pass
+        try:
+            cursor.execute("ALTER TABLE assessments ADD COLUMN modules_used TEXT")
+        except sqlite3.OperationalError:
+            pass
     conn.commit()
     conn.close()
 
