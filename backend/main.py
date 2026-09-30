@@ -83,6 +83,7 @@ class PostgresConnWrapper:
     def cursor(self):
         return PostgresCursorWrapper(self.conn.cursor())
     def commit(self): self.conn.commit()
+    def rollback(self): self.conn.rollback()
     def close(self): self.conn.close()
 
 def get_db_connection():
@@ -90,7 +91,9 @@ def get_db_connection():
         conn = psycopg2.connect(DATABASE_URL)
         return PostgresConnWrapper(conn)
     else:
-        return sqlite3.connect(DB_PATH)
+        # SQLite connection needs a dummy rollback for compatibility in init_db
+        conn = sqlite3.connect(DB_PATH)
+        return conn
 
 
 def init_db():
@@ -111,7 +114,7 @@ def init_db():
     try:
         cursor.execute("ALTER TABLE users ADD COLUMN password_hash TEXT")
     except (sqlite3.OperationalError, psycopg2.errors.DuplicateColumn, psycopg2.errors.UndefinedColumn, psycopg2.ProgrammingError, psycopg2.errors.InFailedSqlTransaction):
-        pass
+        if hasattr(conn, 'rollback'): conn.rollback()
         
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS patients (
@@ -137,11 +140,11 @@ def init_db():
     try:
         cursor.execute("ALTER TABLE assessments ADD COLUMN patient_id TEXT")
     except (sqlite3.OperationalError, psycopg2.errors.DuplicateColumn, psycopg2.errors.UndefinedColumn, psycopg2.ProgrammingError, psycopg2.errors.InFailedSqlTransaction):
-        pass
+        if hasattr(conn, 'rollback'): conn.rollback()
     try:
         cursor.execute("ALTER TABLE assessments ADD COLUMN modules_used TEXT")
     except (sqlite3.OperationalError, psycopg2.errors.DuplicateColumn, psycopg2.errors.UndefinedColumn, psycopg2.ProgrammingError, psycopg2.errors.InFailedSqlTransaction):
-        pass
+        if hasattr(conn, 'rollback'): conn.rollback()
     conn.commit()
     conn.close()
 
